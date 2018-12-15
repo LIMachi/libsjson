@@ -1,0 +1,10 @@
+.idea
+cmake-build-debug
+CMakeLists.txt
+*.a
+*.o
+*.bin
+*.json
+.obj
+.dep
+.items
