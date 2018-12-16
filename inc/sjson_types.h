@@ -23,8 +23,28 @@
 
 typedef int						t_sjson_boolean;
 typedef double					t_sjson_real;
-typedef int						t_sjson_error;
-typedef int						t_sjson_flags;
+
+typedef enum					e_sjson_error
+{
+	SJSON_ERROR_THE_FUCK_IS_THAT = -1,
+	SJSON_ERROR_OK = 0,
+	SJSON_ERROR_END_OF_FILE = 1,
+	SJSON_ERROR_OUT_OF_MEMORY = 2,
+	SJSON_ERROR_INVALID_SYNTAX = 3,
+	SJSON_ERROR_INVALID_SEPARATOR = 4,
+	SJSON_ERROR_INVALID_BOUND = 5,
+	SJSON_ERROR_MISSING_ENDING_BOUND = 6,
+	SJSON_ERROR_INVALID_PARAMETER = 7,
+	SJSON_ERROR_MISMATCHED_NODE_TYPE = 8,
+	SJSON_ERROR_TARGET_NOT_FOUND = 9,
+	SJSON_ERROR_MISSING_COMMENT_ENDER = 10
+}								t_sjson_error;
+
+typedef enum					e_sjson_flags
+{
+	SJSON_FLAG_NONE = 0,
+	SJSON_FLAG_PRINT_ERRORS = 1
+}								t_sjson_flags;
 
 typedef struct s_sjson_object	t_sjson_object;
 typedef struct s_sjson_pair		t_sjson_pair;
@@ -36,14 +56,14 @@ typedef union u_sjson_data		t_sjson_data;
 
 typedef enum					e_sjson_value_type
 {
-	invalid = 0x0,
-	none = 0x1,
-	null = 0x2,
-	boolean = 0x4,
-	array = 0x8,
-	object = 0x10,
-	real = 0x20,
-	string = 0x40
+	SJSON_TYPE_INVALID = 0x0,
+	SJSON_TYPE_NONE = 0x1,
+	SJSON_TYPE_NULL = 0x2,
+	SJSON_TYPE_BOOLEAN = 0x4,
+	SJSON_TYPE_ARRAY = 0x8,
+	SJSON_TYPE_OBJECT = 0x10,
+	SJSON_TYPE_REAL = 0x20,
+	SJSON_TYPE_STRING = 0x40
 }								t_sjson_value_type;
 
 typedef void					(*t_sjson_call_back)(void *, void *,
@@ -86,7 +106,7 @@ struct							s_sjson_value
 {
 	t_sjson_value		*parent;
 	t_sjson_value_type	type;
-	unsigned			error;
+	t_sjson_error		error;
 	t_sjson_data		data;
 };
 
@@ -99,10 +119,12 @@ typedef struct					s_jae
 
 typedef struct					s_sjson_env
 {
-	unsigned char		*src;
-	unsigned char		*limit;
+	char				*src;
+	char				*limit;
 	size_t				slimit;
 	size_t				pos;
+	t_sjson_flags		flags;
+	int					fd_error;
 }								t_sjson_env;
 
 #endif

@@ -25,7 +25,7 @@ void	test_string_ok(char *str, char *expected)
 			&& str[p] == expected[p])
 		++p;
 	if (str[p] != expected[p])
-		write(2, "unexpected string value\n", 24);
+		write(2, "unexpected SJSON_TYPE_STRING value\n", 24);
 }
 
 int		main(const int argc, const char **argv)
@@ -40,7 +40,8 @@ int		main(const int argc, const char **argv)
 		write(1, "at least try to give some argumment :)\n", 39);
 		return (0);
 	}
-	if (sjson_parse_src((unsigned char*)argv[1], strlen(argv[1]), &root, 0) != SJSON_ERROR_OK)
+	if (sjson_parse_src((char*)argv[1], &root, SJSON_FLAG_PRINT_ERRORS, 2)
+			!= SJSON_ERROR_OK)
 		write(2, "error while parsing\n", 20);
 	write(1, "got:\n", 5);
 	sjson_print(1, root, 0);

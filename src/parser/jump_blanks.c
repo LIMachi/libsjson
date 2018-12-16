@@ -10,11 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <sjson_defines.h>
-
-# include "../../inc/sjson_defines.h"
-# include "../../inc/sjson_types.h"
-# include "../../inc/sjson_std_functions.h"
+#include "../../inc/sjson_defines.h"
+#include "../../inc/sjson_types.h"
+#include "../../inc/sjson_functions.h"
+#include <libft.h>
 
 #if SJSON_EXTEND
 
@@ -26,25 +25,26 @@
 
 t_sjson_error	jump_blanks(t_sjson_env *e)
 {
-	size_t	comment_type;
+	size_t				comment_type;
+	static const char	*starters[3] = {"#", "//", "/*"};
+	static const char	*enders[3] = {"\n", "\n", "*/"};
 
 	while (42)
 	{
 		while (e->pos < e->slimit && e->src[e->pos] != '\0'
-				&& std_strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
+				&& ft_strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
 			++e->pos;
 		if (e->pos == e->slimit || e->src[e->pos] == '\0')
-			return (SJSON_ERROR_EOF);
+			return (SJSON_ERROR_END_OF_FILE);
 		comment_type = 0;
-		while (comment_type < SJSON_COMMENT_COUNT
-				&& std_strncmp(SJSON_COMMENT_STARTERS[comment_type],
-					&e->src[e->pos], e->slimit - pos))
+		while (comment_type < 3 && ft_strncmp((char*)starters[comment_type],
+					&e->src[e->pos], e->slimit - e->pos))
 			++comment_type;
-		if (comment_type == SJSON_COMMENT_COUNT)
+		if (comment_type == 3)
 			return (SJSON_ERROR_OK);
 		while (e->pos < e->slimit && e->src[e->pos] != '\0'
-				&& std_strncmp(SJSON_COMMENT_ENDERS[comment_type], &e->src[e->pos],
-					e->slimit - pos))
+				&& ft_strncmp((char*)enders[comment_type], &e->src[e->pos],
+					e->slimit - e->pos))
 			++e->pos;
 		if (e->pos == e->slimit || e->src[e->pos] == '\0')
 			return (SJSON_ERROR_MISSING_COMMENT_ENDER);
@@ -57,10 +57,10 @@ t_sjson_error	jump_blanks(t_sjson_env *e)
 t_sjson_error	jump_blanks(t_sjson_env *e)
 {
 	while (e->pos < e->slimit && e->src[e->pos] != '\0'
-			&& std_strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
+			&& ft_strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
 		++e->pos;
 	if (e->pos == e->slimit && e->src[e->pos] == '\0')
-		return (SJSON_ERROR_EOF);
+		return (sjson_error(e, SJSON_ERROR_END_OF_FILE, "jump_blanks"));
 	return (SJSON_ERROR_OK);
 }
 

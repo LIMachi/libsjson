@@ -61,4 +61,10 @@ t_sjson_error	sjson_search_index_in_array(t_sjson_value *value,
 											size_t index,
 											t_sjson_value **out);
 
+/*
+** print
+*/
+
+t_sjson_error	sjson_error(t_sjson_env *e, t_sjson_error err, char *func);
+
 #endif

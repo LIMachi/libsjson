@@ -13,7 +13,7 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include "../../inc/sjson_std_functions.h"
+#include <libft.h>
 
 t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 											const char *str,
@@ -27,14 +27,14 @@ t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 	len = 0;
 	while (str[len] != '\0')
 		++len;
-	if ((error = sjson_test_type(v, object)) != SJSON_ERROR_OK)
+	if ((error = sjson_test_type(v, SJSON_TYPE_OBJECT)) != SJSON_ERROR_OK)
 		return (error);
 	obj = &v->data.obj;
 	i = -1;
 	while (++i < obj->nb_pairs)
 		if (obj->pairs[i] != NULL && obj->pairs[i]->key != NULL
 				&& len == obj->pairs[i]->key->length
-				&& !std_strncmp(obj->pairs[i]->key->data, (char*)str, len))
+				&& !ft_strncmp(obj->pairs[i]->key->data, (char*)str, len))
 		{
 			*out = obj->pairs[i]->value;
 			return (SJSON_ERROR_OK);

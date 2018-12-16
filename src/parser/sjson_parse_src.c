@@ -10,24 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../inc/sjson_defines.h"
-# include "../../inc/sjson_types.h"
-# include "../../inc/sjson_functions.h"
+#include "../../inc/sjson_defines.h"
+#include "../../inc/sjson_types.h"
+#include "../../inc/sjson_functions.h"
 
-t_sjson_error	sjson_parse_src(unsigned char *src,
-								size_t len,
-								t_sjson_value **out)
+t_sjson_error	sjson_parse_src(char *src,
+								t_sjson_value **out,
+								t_sjson_flags flags,
+								int fd_error)
 {
 	t_sjson_env		e;
 
-	if (src == NULL || len == 0 || out == NULL)
-		return (SJSON_INVALID_PARAMETER);
+	if (src == NULL || out == NULL)
+		return (SJSON_ERROR_INVALID_PARAMETER);
 	if ((*out = malloc(sizeof(t_sjson_value))) == NULL)
-		return (SJSON_ERROR_OOM);
+		return (SJSON_ERROR_OUT_OF_MEMORY);
 	e.src = src;
-	e.limit = src + len;
-	e.slimit = len;
+	e.limit = (char*)(size_t)-1;
+	e.slimit = (size_t)-1;
 	e.pos = 0;
+	e.fd_error = fd_error;
+	e.flags = flags;
 	(*out)->parent = *out;
 	return (new_value(&e, *out));
 }

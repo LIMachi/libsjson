@@ -10,21 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../inc/sjson_defines.h"
-# include "../../inc/sjson_types.h"
+#include "../../inc/sjson_defines.h"
+#include "../../inc/sjson_types.h"
 
 t_sjson_error	sjson_test_type(const t_sjson_value *value,
 								const t_sjson_value_type type)
 {
 	if (value == NULL || !(value->type & type) || value->parent == NULL)
 		return (0);
-	if ((value->type & array) && value->data.ar.values == NULL)
+	if ((value->type & SJSON_TYPE_ARRAY) && value->data.ar.values == NULL)
 		return (0);
-	if ((value->type & object) && value->data.obj.pairs == NULL)
+	if ((value->type & SJSON_TYPE_OBJECT) && value->data.obj.pairs == NULL)
 		return (0);
-	if ((value->type & string) && value->data.str == NULL)
+	if ((value->type & SJSON_TYPE_STRING) && value->data.str == NULL)
 		return (0);
-	if (value->type & boolean && value->data.bol & ~1)
+	if (value->type & SJSON_TYPE_BOOLEAN && value->data.bol & ~1)
 		return (0);
 	return (1);
 }

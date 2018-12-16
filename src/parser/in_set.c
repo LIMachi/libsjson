@@ -10,8 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../inc/sjson_defines.h"
-# include "../../inc/sjson_types.h"
+#include "../../inc/sjson_defines.h"
+#include "../../inc/sjson_types.h"
+#include "../../inc/sjson_functions.h"
 
 t_sjson_error			in_set(t_sjson_env *e,
 								char **set,
@@ -30,9 +31,10 @@ t_sjson_error			in_set(t_sjson_env *e,
 		if (j <= e->slimit - e->pos)
 		{
 			j = 0;
-			while (j + e->pos < e->slimit && set[i][j] == e->src[e->pos + j])
+			while (j + e->pos < e->slimit && set[i][j] != '\0'
+					&& set[i][j] == e->src[e->pos + j])
 				++j;
-			if (set[i][j])
+			if (set[i][j] != '\0')
 				continue ;
 			if (update_pos)
 				e->pos += j;

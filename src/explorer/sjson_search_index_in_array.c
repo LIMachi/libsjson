@@ -20,7 +20,7 @@ t_sjson_error	sjson_search_index_in_array(t_sjson_value *value,
 {
 	t_sjson_error	error;
 
-	if ((error = sjson_test_type(value, array)) != SJSON_ERROR_OK)
+	if ((error = sjson_test_type(value, SJSON_TYPE_ARRAY)) != SJSON_ERROR_OK)
 		return (error);
 	if (index >= value->data.ar.nb_values)
 		return (SJSON_ERROR_TARGET_NOT_FOUND);

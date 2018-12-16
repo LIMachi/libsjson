@@ -18,23 +18,23 @@
 # include "sjson_functions.h"
 
 /*
-** Given the string src and it's length (facultative, set it to -1 to ignore the
-** length), extract a json tree stored in the pointer out (out will be
-** allocated).
+** Given the string src and it's length (facultative, set it to -1
+** to ignore the length), extract a json tree stored in the pointer out
+** (out will be allocated).
 ** The final parameter is used to pass flags (or-ed) to the parser:
 **   0: no flags, default behavior
-**   SJSON_PRINT_ERRORS: will output detailed error information in stderr
+**   SJSON_FLAG_PRINT_ERRORS: will output detailed error information in stderr
 ** Will return SJSON_ERROR_OK if no errors (in src or allocations) where
 ** encountered.
 ** On error, it will try to fill as much as possible out before returning
-** meaning on invalid syntax or truncated src, it will fill up to the last valid
-** expression.
+** meaning on invalid syntax or truncated src, it will fill up to
+** the last valid expression.
 */
 
-t_sjson_error	sjson_parse_src(unsigned char *src,
-								size_t len,
+t_sjson_error	sjson_parse_src(char *src,
 								t_sjson_value **out,
-								t_sjson_flags flags);
+								t_sjson_flags flags,
+								int fd_error);
 
 /*
 ** explorer to acces the content of nodes using an expression
@@ -82,12 +82,12 @@ t_sjson_error	sjson_parse_src(unsigned char *src,
 **   sjson_explorer(root, "ro>a>s#", "test", 0, sjson_strcmp, "ok");
 */
 
-int					sjson_explorer(const t_sjson_value *root,
-									const char *form,
-									...);
+int				sjson_explorer(const t_sjson_value *root,
+								const char *form,
+								...);
 
-ssize_t				sjson_print(int fd,
-								t_sjson_value *val,
-								int flags);
+int				sjson_print(int fd,
+							t_sjson_value *val,
+							int flags);
 
 #endif
