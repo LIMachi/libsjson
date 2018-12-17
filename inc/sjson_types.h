@@ -37,7 +37,8 @@ typedef enum					e_sjson_error
 	SJSON_ERROR_INVALID_PARAMETER = 7,
 	SJSON_ERROR_MISMATCHED_NODE_TYPE = 8,
 	SJSON_ERROR_TARGET_NOT_FOUND = 9,
-	SJSON_ERROR_MISSING_COMMENT_ENDER = 10
+	SJSON_ERROR_MISSING_COMMENT_ENDER = 10,
+	SJSON_ERROR_FILE_ACCESS = 11
 }								t_sjson_error;
 
 typedef enum					e_sjson_flags
@@ -120,6 +121,7 @@ typedef struct					s_jae
 typedef struct					s_sjson_env
 {
 	char				*src;
+	char				*path;
 	char				*limit;
 	size_t				slimit;
 	size_t				pos;

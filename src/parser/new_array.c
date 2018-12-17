@@ -43,6 +43,8 @@ static inline t_sjson_error	new_array_1(t_sjson_env *e,
 	in_set(e, SJSON_ARRAY_ENDERS, SJSON_ARRAY_COUNT, 0) != SJSON_ERROR_OK)
 		return (sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_array_1"));
 	++out->data.ar.nb_values;
+	if (ft_strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) != NULL)
+		++e->pos;
 	return (SJSON_ERROR_OK);
 }
 

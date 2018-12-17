@@ -15,7 +15,9 @@
 #include "../../inc/sjson_functions.h"
 #include <stdarg.h>
 
-inline static int	sf_json_accesses_access_right(t_jae *e, va_list ap)
+#include <libft.h>
+
+inline static int	i_right(t_jae *e, va_list ap)
 {
 	t_sjson_value	*tmp;
 	int				tmp1;
@@ -27,7 +29,7 @@ inline static int	sf_json_accesses_access_right(t_jae *e, va_list ap)
 			!sjson_test_type(e->node, e->etype))
 		e->error_stack = 1;
 	if (e->error_stack)
-		return (1 | va_arg(ap, size_t));
+		return (va_arg(ap, size_t) || 1);
 	if (e->etype == SJSON_TYPE_OBJECT)
 	{
 		if (sjson_search_pair_in_object(e->node,
@@ -37,13 +39,13 @@ inline static int	sf_json_accesses_access_right(t_jae *e, va_list ap)
 		return (1);
 	}
 	if (sjson_search_index_in_array(e->node,
-			tmp1 = va_arg(ap, int), &tmp) != SJSON_ERROR_OK)
+			tmp1 = va_arg(ap, size_t), &tmp) != SJSON_ERROR_OK)
 		return (e->error_stack = 1);
 	e->node = tmp;
 	return (1);
 }
 
-inline static void	sf_json_accesses_access_store(t_jae *e, void *tmp)
+inline static int	i_store(t_jae *e, void *tmp)
 {
 	if (e->node->type == SJSON_TYPE_STRING)
 		*(t_sjson_string**)tmp = e->node->data.str;
@@ -59,36 +61,39 @@ inline static void	sf_json_accesses_access_store(t_jae *e, void *tmp)
 		*(t_sjson_boolean*)tmp = e->node->data.bol;
 	if (e->node->type == SJSON_TYPE_NONE)
 		*(t_sjson_value**)tmp = e->node;
+	return (1);
 }
 
-inline static int	sf_json_accesses_access(t_jae *e, const char c, va_list ap)
+inline static int	i_access(t_jae *e, const char c, va_list ap)
 {
 	t_sjson_call_back	cb;
 
 	if (c == '>')
-		return (sf_json_accesses_access_right(e, ap));
+		return (i_right(e, ap));
 	if (c == '<' && e->error_stack && --e->error_stack)
 		return (1);
 	if (c == '<')
-	{
-		e->node = e->node->parent;
-		return (1);
-	}
-	cb = va_arg(ap, t_sjson_call_back);
-	if (e->error_stack || (e->etype != SJSON_TYPE_NONE
-			&& !sjson_test_type(e->node, e->etype)))
-		return (1);
+		return ((e->node = e->node->parent) == e->node);
+	if (c == '#' || c == '*')
+		cb = va_arg(ap, t_sjson_call_back);
+	if (e->error_stack || !sjson_test_type(e->node, e->etype))
+		return ((c == '#' ? va_arg(ap, void*) : 0) || 1);
 	if (c == '#')
+	{
 		if (e->etype == SJSON_TYPE_NONE)
 			cb(e->node, va_arg(ap, void*), e->node->type);
+		else if (e->etype == SJSON_TYPE_STRING)
+			cb(e->node->data.str, va_arg(ap, void*), e->node->type);
 		else
-			cb((void*)&e->node->data, va_arg(ap, void*), e->node->type);
-	else
-		sf_json_accesses_access_store(e, (void*)cb);
-	return (1);
+			cb((void *)&e->node->data, va_arg(ap, void*), e->node->type);
+		return (1);
+	}
+	else if (c == '*')
+		return (i_store(e, (void*)cb));
+	return (0);
 }
 
-inline static int	sf_json_accesses_type_change(t_jae *e, const char c)
+inline static int	i_type_change(t_jae *e, const char c)
 {
 	if (c == 'o')
 		return ((e->etype = SJSON_TYPE_OBJECT) == SJSON_TYPE_OBJECT);
@@ -104,9 +109,7 @@ inline static int	sf_json_accesses_type_change(t_jae *e, const char c)
 		return ((e->etype = SJSON_TYPE_NULL) == SJSON_TYPE_NULL);
 	if (c == 'v')
 		return ((e->etype = SJSON_TYPE_NONE) == SJSON_TYPE_NONE);
-	if (c == '>' || c == '<' || c == '*' || c == '#')
-		return (0);
-	return (1);
+	return (0);
 }
 
 int					sjson_explorer(const t_sjson_value *root,
@@ -126,10 +129,7 @@ int					sjson_explorer(const t_sjson_value *root,
 		if (form[pos] == '$')
 			e = (t_jae){.node = (t_sjson_value*)root, .etype = e.etype,
 						.error_stack = 0};
-		else if (form[pos] == ' ')
-			;
-		else if (!sf_json_accesses_type_change(&e, form[pos]) &&
-				!sf_json_accesses_access(&e, form[pos], ap))
+		else if (!i_type_change(&e, form[pos]) && !i_access(&e, form[pos], ap))
 		{
 			va_end(ap);
 			return (-1);

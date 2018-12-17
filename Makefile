@@ -7,6 +7,8 @@ INCDIRS = inc
 OBJDIR = .obj
 MAIN = src/test.c
 
+EXEARGS := '{"a": [1, true], "b": "ok"}'
+
 CFLAGS = -Wall -Wextra -Werror -g
 
 PINC := ../libft/inc

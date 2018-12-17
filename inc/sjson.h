@@ -15,7 +15,6 @@
 
 # include "sjson_defines.h"
 # include "sjson_types.h"
-# include "sjson_functions.h"
 
 /*
 ** Given the string src and it's length (facultative, set it to -1
@@ -31,10 +30,15 @@
 ** the last valid expression.
 */
 
-t_sjson_error	sjson_parse_src(char *src,
-								t_sjson_value **out,
-								t_sjson_flags flags,
-								int fd_error);
+t_sjson_error	sjson_parse_str(char *src,
+	t_sjson_value **out,
+	t_sjson_flags flags,
+	int fd_error);
+
+t_sjson_error	sjson_parse_file(const char *path,
+	t_sjson_value **out,
+	t_sjson_flags flags,
+	int fd_error);
 
 /*
 ** explorer to acces the content of nodes using an expression
@@ -89,5 +93,7 @@ int				sjson_explorer(const t_sjson_value *root,
 int				sjson_print(int fd,
 							t_sjson_value *val,
 							int flags);
+
+void			sjson_free(t_sjson_value *value);
 
 #endif

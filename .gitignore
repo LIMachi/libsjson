@@ -8,3 +8,4 @@ CMakeLists.txt
 .obj
 .dep
 .items
+.DS_Store

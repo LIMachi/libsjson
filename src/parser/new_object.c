@@ -42,6 +42,8 @@ static inline t_sjson_error	new_object_1(t_sjson_env *e,
 	in_set(e, SJSON_OBJECT_ENDERS, SJSON_OBJECT_COUNT, 0) != SJSON_ERROR_OK)
 		return (SJSON_ERROR_INVALID_SYNTAX);
 	++out->data.obj.nb_pairs;
+	if (ft_strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) != NULL)
+		++e->pos;
 	return (SJSON_ERROR_OK);
 }
 

@@ -28,11 +28,11 @@ static inline int	i_sjson_extract_line(t_sjson_env *e,
 	*start = e->src;
 	while (len--)
 	{
-		if (!line)
-			++column;
 		if (e->src[len] == '\n')
-			if (!line++)
-				*start = &e->src[len];
+			if (!(*line)++)
+				*start = &e->src[len + 1];
+		if (!(*line))
+			++(*column);
 	}
 	len = 0;
 	while (&(*start)[len] < e->limit && (*start)[len] != '\n'
@@ -57,7 +57,7 @@ t_sjson_error		sjson_error(t_sjson_env *e, t_sjson_error err, char *func)
 		ft_dprintf(e->fd_error, "%s: JSON parsing error: %s\n", func,
 		(err < 11 && err > 0) ? error_strings[err] : "how did you get this?");
 		len = i_sjson_extract_line(e, &line, &column, &start);
-		column += ft_dprintf(e->fd_error, "%d:%d:", line + 1, column + 1);
+		column += ft_dprintf(e->fd_error, "%s:%zu:%d:%d:", e->path, e->pos + 1, line + 1, column + 1);
 		line = start[len];
 		start[len] = '\0';
 		ft_dprintf(e->fd_error, "%s\n", start);

@@ -21,14 +21,13 @@ t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 {
 	unsigned long	i;
 	t_sjson_object	*obj;
-	t_sjson_error	error;
 	size_t			len;
 
 	len = 0;
 	while (str[len] != '\0')
 		++len;
-	if ((error = sjson_test_type(v, SJSON_TYPE_OBJECT)) != SJSON_ERROR_OK)
-		return (error);
+	if (!sjson_test_type(v, SJSON_TYPE_OBJECT))
+		return (SJSON_ERROR_MISMATCHED_NODE_TYPE);
 	obj = &v->data.obj;
 	i = -1;
 	while (++i < obj->nb_pairs)

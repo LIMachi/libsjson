@@ -18,6 +18,8 @@
 static inline t_sjson_value_type	evaluate_type(t_sjson_env *e,
 												t_sjson_value *out)
 {
+	if (ft_strchr(SJSON_STRING_BOUNDS, e->src[e->pos]) != NULL)
+		return (out->type = SJSON_TYPE_STRING);
 	if (in_set(e, SJSON_OBJECT_STARTERS, SJSON_OBJECT_COUNT, 1)
 			== SJSON_ERROR_OK)
 		return (out->type = SJSON_TYPE_OBJECT);
@@ -51,7 +53,7 @@ t_sjson_error						new_value(t_sjson_env *e,
 	if ((error = jump_blanks(e)) != SJSON_ERROR_OK)
 		return (out->error = error);
 	if (evaluate_type(e, out) == SJSON_TYPE_INVALID)
-		error = sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_value");
+		error = sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_value.type");
 	if (out->type == SJSON_TYPE_BOOLEAN || out->type == SJSON_TYPE_NULL)
 		error = SJSON_ERROR_OK;
 	if (out->type == SJSON_TYPE_STRING)

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sjson_parse_src.c                                  :+:      :+:    :+:   */
+/*   sjson_parse_str.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -13,8 +13,9 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
+#include <libft.h>
 
-t_sjson_error	sjson_parse_src(char *src,
+t_sjson_error	sjson_parse_str(char *src,
 								t_sjson_value **out,
 								t_sjson_flags flags,
 								int fd_error)
@@ -26,11 +27,12 @@ t_sjson_error	sjson_parse_src(char *src,
 	if ((*out = malloc(sizeof(t_sjson_value))) == NULL)
 		return (SJSON_ERROR_OUT_OF_MEMORY);
 	e.src = src;
-	e.limit = (char*)(size_t)-1;
-	e.slimit = (size_t)-1;
+	e.slimit = ft_strlen(e.src);
+	e.limit = &e.src[e.slimit];
 	e.pos = 0;
 	e.fd_error = fd_error;
 	e.flags = flags;
+	e.path = "<local string>";
 	(*out)->parent = *out;
 	return (new_value(&e, *out));
 }
