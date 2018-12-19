@@ -45,22 +45,26 @@ inline static int	i_right(t_jae *e, va_list ap)
 	return (1);
 }
 
-inline static int	i_store(t_jae *e, void *tmp)
+inline static int	i_store(t_jae *e, void *tmp, int do_store)
 {
-	if (e->node->type == SJSON_TYPE_STRING)
-		*(t_sjson_string**)tmp = e->node->data.str;
-	if (e->node->type & SJSON_TYPE_NULL)
-		*(void**)tmp = NULL;
-	if (e->node->type & SJSON_TYPE_ARRAY)
-		*(t_sjson_array**)tmp = &e->node->data.ar;
-	if (e->node->type & SJSON_TYPE_OBJECT)
-		*(t_sjson_object**)tmp = &e->node->data.obj;
-	if (e->node->type == SJSON_TYPE_REAL)
-		*(t_sjson_real*)tmp = e->node->data.real;
-	if (e->node->type == SJSON_TYPE_BOOLEAN)
-		*(t_sjson_boolean*)tmp = e->node->data.bol;
-	if (e->node->type == SJSON_TYPE_NONE)
-		*(t_sjson_value**)tmp = e->node;
+	if (do_store)
+	{
+		if (e->node->type == SJSON_TYPE_STRING)
+			*(t_sjson_string **)tmp = e->node->data.str;
+		if (e->node->type & SJSON_TYPE_NULL)
+			*(void **)tmp = NULL;
+		if (e->node->type & SJSON_TYPE_ARRAY)
+			*(t_sjson_array **)tmp = &e->node->data.ar;
+		if (e->node->type & SJSON_TYPE_OBJECT)
+			*(t_sjson_object **)tmp = &e->node->data.obj;
+		if (e->node->type == SJSON_TYPE_REAL)
+			*(t_sjson_real *)tmp = e->node->data.real;
+		if (e->node->type == SJSON_TYPE_BOOLEAN)
+			*(t_sjson_boolean *)tmp = e->node->data.bol;
+		if (e->node->type == SJSON_TYPE_NONE)
+			*(t_sjson_value **)tmp = e->node;
+	}
+	++e->valid;
 	return (1);
 }
 
@@ -81,15 +85,15 @@ inline static int	i_access(t_jae *e, const char c, va_list ap)
 	if (c == '#')
 	{
 		if (e->etype == SJSON_TYPE_NONE)
-			cb(e->node, va_arg(ap, void*), e->node->type);
+			e->e = cb(e->node, va_arg(ap, void*), e->node->type);
 		else if (e->etype == SJSON_TYPE_STRING)
-			cb(e->node->data.str, va_arg(ap, void*), e->node->type);
+			e->e = cb(e->node->data.str, va_arg(ap, void*), e->node->type);
 		else
-			cb((void *)&e->node->data, va_arg(ap, void*), e->node->type);
-		return (1);
+			e->e = cb((void *)&e->node->data, va_arg(ap, void*), e->node->type);
+		return (e->e != SJSON_ERROR_OK || (++e->valid) || 1);
 	}
-	else if (c == '*')
-		return (i_store(e, (void*)cb));
+	else if (c == '*' || c == '?')
+		return (i_store(e, (void*)cb, c == '*'));
 	return (0);
 }
 
@@ -123,17 +127,21 @@ int					sjson_explorer(const t_sjson_value *root,
 	if (root == NULL || form == NULL)
 		return (-1);
 	va_start(ap, form);
-	e = (t_jae){.node = NULL, .etype = SJSON_TYPE_NONE, .error_stack = 0};
+	e = (t_jae){.node = NULL, .etype = SJSON_TYPE_NONE, .error_stack = 0,
+		.valid = 0, .e = SJSON_ERROR_OK};
 	pos = -1;
 	while (form[++pos] != '\0')
 		if (form[pos] == '$')
 			e = (t_jae){.node = (t_sjson_value*)root, .etype = e.etype,
-						.error_stack = 0};
+						.error_stack = 0, .valid = e.valid,
+						.e = SJSON_ERROR_OK};
+		else if (ft_isspace(form[pos]))
+			;
 		else if (!i_type_change(&e, form[pos]) && !i_access(&e, form[pos], ap))
 		{
 			va_end(ap);
 			return (-1);
 		}
 	va_end(ap);
-	return (0);
+	return (e.valid);
 }

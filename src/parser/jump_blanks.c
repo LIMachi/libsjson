@@ -49,7 +49,7 @@ t_sjson_error	jump_blanks(t_sjson_env *e)
 		if (e->pos == e->slimit || e->src[e->pos] == '\0')
 			return (SJSON_ERROR_MISSING_COMMENT_ENDER);
 	}
-	return (SJSON_ERROR_THE_FUCK_IS_THAT);
+	return (SJSON_ERROR_KO);
 }
 
 #else

@@ -51,7 +51,6 @@ t_sjson_error				new_object(t_sjson_env *e,
 									t_sjson_value *out)
 {
 	size_t			tmp_size;
-	t_sjson_pair	**tmp_ptr;
 	t_sjson_error	error;
 
 	tmp_size = SJSON_STARTING_OBJECT_SIZE;
@@ -64,13 +63,8 @@ t_sjson_error				new_object(t_sjson_env *e,
 		if ((error = new_object_1(e, out, &tmp_size)) != SJSON_ERROR_OK)
 			return (error);
 	if (tmp_size > out->data.obj.nb_pairs)
-	{
-		if ((tmp_ptr = realloc(out->data.obj.pairs,
-				out->data.obj.nb_pairs * sizeof(t_sjson_pair*))) == NULL)
-			return (SJSON_ERROR_OUT_OF_MEMORY);
-		else
-			out->data.obj.pairs = tmp_ptr;
-	}
+		out->data.obj.pairs = reallocf(out->data.obj.pairs,
+				out->data.obj.nb_pairs * sizeof(t_sjson_pair*));
 	return (error);
 }
 

@@ -57,7 +57,7 @@ t_sjson_error		sjson_error(t_sjson_env *e, t_sjson_error err, char *func)
 		ft_dprintf(e->fd_error, "%s: JSON parsing error: %s\n", func,
 		(err < 11 && err > 0) ? error_strings[err] : "how did you get this?");
 		len = i_sjson_extract_line(e, &line, &column, &start);
-		column += ft_dprintf(e->fd_error, "%s:%zu:%d:%d:", e->path, e->pos + 1, line + 1, column + 1);
+		ft_dprintf(e->fd_error, "%s:%d:%d:\n", e->path, line + 1, column + 1);
 		line = start[len];
 		start[len] = '\0';
 		ft_dprintf(e->fd_error, "%s\n", start);

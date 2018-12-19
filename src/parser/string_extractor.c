@@ -37,10 +37,11 @@ t_sjson_error	string_extractor(t_sjson_env *e,
 		return (sjson_error(e, SJSON_ERROR_MISSING_ENDING_BOUND,
 			"string_extractor"));
 		--len;
-	if ((*out = malloc(sizeof(t_sjson_string) + len)) == NULL)
+	if ((*out = malloc(sizeof(t_sjson_string) + len + 1)) == NULL)
 		return (sjson_error(e, SJSON_ERROR_OUT_OF_MEMORY, "string_extractor"));
 	(*out)->length = len;
 	(void)ft_memcpy((*out)->data, &e->src[e->pos + 1], len);
+	(*out)->data[len] = 0;
 	e->pos += 2 + len;
 	return (SJSON_ERROR_OK);
 }

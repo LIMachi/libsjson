@@ -20,13 +20,17 @@ void	sjson_free(t_sjson_value *value)
 	if (value == NULL)
 		return ;
 	if (value->type == SJSON_TYPE_STRING)
+	{
 		free(value->data.str);
+		value->data.str = NULL;
+	}
 	else if (value->type == SJSON_TYPE_ARRAY)
 	{
 		i = -1;
 		while (++i < value->data.ar.nb_values)
 			sjson_free(value->data.ar.values[i]);
 		free(value->data.ar.values);
+		value->data.ar.values = NULL;
 	}
 	else if (value->type == SJSON_TYPE_OBJECT)
 	{
@@ -34,10 +38,16 @@ void	sjson_free(t_sjson_value *value)
 		while (++i < value->data.obj.nb_pairs)
 		{
 			free(value->data.obj.pairs[i]->key);
+			value->data.obj.pairs[i]->key = NULL;
 			sjson_free(value->data.obj.pairs[i]->value);
+			value->data.obj.pairs[i]->value = NULL;
 			free(value->data.obj.pairs[i]);
+			value->data.obj.pairs[i] = NULL;
 		}
 		free(value->data.obj.pairs);
+		value->data.obj.pairs = NULL;
 	}
+	value->parent = NULL;
+	value->type = SJSON_TYPE_INVALID;
 	free(value);
 }

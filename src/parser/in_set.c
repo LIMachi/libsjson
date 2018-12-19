@@ -41,5 +41,5 @@ t_sjson_error			in_set(t_sjson_env *e,
 			return (SJSON_ERROR_OK);
 		}
 	}
-	return (SJSON_ERROR_THE_FUCK_IS_THAT);
+	return (SJSON_ERROR_KO);
 }

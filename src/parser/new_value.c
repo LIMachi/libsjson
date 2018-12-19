@@ -38,8 +38,7 @@ static inline t_sjson_value_type	evaluate_type(t_sjson_env *e,
 		return (out->type = SJSON_TYPE_BOOLEAN);
 	}
 	if (e->src[e->pos] == '-' || (SJSON_EXTEND && e->src[e->pos] == '+')
-			|| (ft_isdigit(e->src[e->pos])
-				&& (SJSON_EXTEND || e->src[e->pos] != '0'))
+			|| (ft_isdigit(e->src[e->pos]))
 			|| (SJSON_EXTEND && e->src[e->pos] == '.'))
 		return (out->type = SJSON_TYPE_REAL);
 	return (out->type = SJSON_TYPE_INVALID);
@@ -53,7 +52,7 @@ t_sjson_error						new_value(t_sjson_env *e,
 	if ((error = jump_blanks(e)) != SJSON_ERROR_OK)
 		return (out->error = error);
 	if (evaluate_type(e, out) == SJSON_TYPE_INVALID)
-		error = sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_value.type");
+		error = sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_value");
 	if (out->type == SJSON_TYPE_BOOLEAN || out->type == SJSON_TYPE_NULL)
 		error = SJSON_ERROR_OK;
 	if (out->type == SJSON_TYPE_STRING)

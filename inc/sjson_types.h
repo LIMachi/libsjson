@@ -26,7 +26,7 @@ typedef double					t_sjson_real;
 
 typedef enum					e_sjson_error
 {
-	SJSON_ERROR_THE_FUCK_IS_THAT = -1,
+	SJSON_ERROR_KO = -1,
 	SJSON_ERROR_OK = 0,
 	SJSON_ERROR_END_OF_FILE = 1,
 	SJSON_ERROR_OUT_OF_MEMORY = 2,
@@ -67,7 +67,7 @@ typedef enum					e_sjson_value_type
 	SJSON_TYPE_STRING = 0x40
 }								t_sjson_value_type;
 
-typedef void					(*t_sjson_call_back)(void *, void *,
+typedef t_sjson_error			(*t_sjson_call_back)(void *, void *,
 													t_sjson_value_type);
 
 struct							s_sjson_string
@@ -116,6 +116,8 @@ typedef struct					s_jae
 	t_sjson_value		*node;
 	t_sjson_value_type	etype;
 	int					error_stack;
+	int					valid;
+	t_sjson_error		e;
 }								t_jae;
 
 typedef struct					s_sjson_env

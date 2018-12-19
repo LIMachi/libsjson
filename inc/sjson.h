@@ -75,6 +75,9 @@ t_sjson_error	sjson_parse_file(const char *path,
 **     pointer passed in va_arg will be the second argument and the last is the
 **     type of the first argument.
 **     If no error where found, the callback must return SJSON_ERROR_OK
+**     If errors where found, the callback must return SJSON_ERROR_KO
+**   ?: just test if the value is valid (increment the return value like a valid
+**     call to '#' or '*', no argument is used)
 ** example:
 **   file.json: {"test":["ok", null]}
 **   t_sjson_error sjson_strcmp(t_sjson_string *strn, char *str)
