@@ -21,6 +21,13 @@
 
 # include <stdlib.h>
 
+/*
+** stdarg.h
+** va_list
+*/
+
+# include <stdarg.h>
+
 typedef int						t_sjson_boolean;
 typedef double					t_sjson_real;
 
@@ -118,6 +125,7 @@ typedef struct					s_jae
 	int					error_stack;
 	int					valid;
 	t_sjson_error		e;
+	va_list				ap;
 }								t_jae;
 
 typedef struct					s_sjson_env

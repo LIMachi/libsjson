@@ -13,7 +13,20 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <libft.h>
+#include <string.h> //FIXME
+
+#ifndef __FreeBSD__
+
+static void	*reallocf(void *ptr, size_t size)
+{
+	void	*out;
+
+	if ((out = realloc(ptr, size)) == NULL && ptr != NULL && size != 0)
+		free(ptr);
+	return (out);
+}
+
+#endif
 
 static inline t_sjson_error	new_object_1(t_sjson_env *e,
 										t_sjson_value *out,
@@ -38,11 +51,11 @@ static inline t_sjson_error	new_object_1(t_sjson_env *e,
 		return (error);
 	if ((error = jump_blanks(e)) != SJSON_ERROR_OK)
 		return (error);
-	if (ft_strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) == NULL &&
+	if (strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) == NULL &&
 	in_set(e, SJSON_OBJECT_ENDERS, SJSON_OBJECT_COUNT, 0) != SJSON_ERROR_OK)
 		return (SJSON_ERROR_INVALID_SYNTAX);
 	++out->data.obj.nb_pairs;
-	if (ft_strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) != NULL)
+	if (strchr(SJSON_ARRAY_SEPARATORS, e->src[e->pos]) != NULL)
 		++e->pos;
 	return (SJSON_ERROR_OK);
 }

@@ -10,33 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/sjson_defines.h"
-#include "../../inc/sjson_types.h"
-#include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
+#include <stdarg.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
-											const char *str,
-											t_sjson_value **out)
+void	*ft_clear(char *form, ...)
 {
-	unsigned long	i;
-	t_sjson_object	*obj;
-	size_t			len;
+	va_list	va;
+	void	*out;
 
-	len = 0;
-	while (str[len] != '\0')
-		++len;
-	if (!sjson_test_type(v, SJSON_TYPE_OBJECT))
-		return (SJSON_ERROR_MISMATCHED_NODE_TYPE);
-	obj = &v->data.obj;
-	i = -1;
-	while (++i < obj->nb_pairs)
-		if (obj->pairs[i] != NULL && obj->pairs[i]->key != NULL
-				&& len == obj->pairs[i]->key->length
-				&& !strncmp(obj->pairs[i]->key->data, (char*)str, len))
-		{
-			*out = obj->pairs[i]->value;
-			return (SJSON_ERROR_OK);
-		}
-	return (SJSON_ERROR_TARGET_NOT_FOUND);
+	out = NULL;
+	if (form == NULL)
+		return (out);
+	va_start(va, form);
+	while (*form != '\0')
+	{
+		if (*form == 'd')
+			close(va_arg(va, int));
+		else if (*form == 'p')
+			free(va_arg(va, void *));
+		else if (*form == 'r')
+			out = va_arg(va, void *);
+		++form;
+	}
+	va_end(va);
+	return (out);
 }

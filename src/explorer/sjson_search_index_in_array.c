@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <stdio.h>
 
 t_sjson_error	sjson_search_index_in_array(t_sjson_value *value,
 											size_t index,

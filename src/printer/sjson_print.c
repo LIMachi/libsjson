@@ -12,13 +12,8 @@
 
 #include "../../inc/sjson.h"
 #include <unistd.h>
-#include <libft.h>
-
-/*
-** FIXME: stdio, drpintf
-*/
-
-#include <stdio.h>
+#include <string.h> //FIXME
+#include <stdio.h> //FIXME
 
 static inline int		sjson_print_2(int fd,
 									t_sjson_value *val,
@@ -30,7 +25,7 @@ static inline int		sjson_print_2(int fd,
 	if (val->type == SJSON_TYPE_ARRAY)
 	{
 		out += write(fd, SJSON_ARRAY_STARTERS[0],
-			ft_strlen(SJSON_ARRAY_STARTERS[0]));
+			strlen(SJSON_ARRAY_STARTERS[0]));
 		i = -1;
 		while (++i < val->data.ar.nb_values)
 		{
@@ -39,7 +34,7 @@ static inline int		sjson_print_2(int fd,
 				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
 		}
 		out += write(fd, SJSON_ARRAY_ENDERS[0],
-			ft_strlen(SJSON_ARRAY_ENDERS[0]));
+			strlen(SJSON_ARRAY_ENDERS[0]));
 	}
 	return (out);
 }
@@ -55,7 +50,7 @@ static inline int		sjson_print_1(int fd,
 	if (val->type == SJSON_TYPE_OBJECT)
 	{
 		out += write(fd, SJSON_OBJECT_STARTERS[0],
-			ft_strlen(SJSON_OBJECT_STARTERS[0]));
+			strlen(SJSON_OBJECT_STARTERS[0]));
 		i = -1;
 		while (++i < val->data.obj.nb_pairs)
 		{
@@ -69,7 +64,7 @@ static inline int		sjson_print_1(int fd,
 				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
 		}
 		out += write(fd, SJSON_OBJECT_ENDERS[0],
-			ft_strlen(SJSON_OBJECT_ENDERS[0]));
+			strlen(SJSON_OBJECT_ENDERS[0]));
 	}
 	return (out);
 }

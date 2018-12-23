@@ -67,4 +67,10 @@ t_sjson_error	sjson_search_index_in_array(t_sjson_value *value,
 
 t_sjson_error	sjson_error(t_sjson_env *e, t_sjson_error err, char *func);
 
+/*
+** other
+*/
+
+void			*ft_clear(char *form, ...);
+
 #endif

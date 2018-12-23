@@ -13,7 +13,8 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <libft.h>
+#include <stdio.h> //FIXME
+#include <unistd.h>
 
 static inline int	i_sjson_extract_line(t_sjson_env *e,
 										int *line,
@@ -54,13 +55,13 @@ t_sjson_error		sjson_error(t_sjson_env *e, t_sjson_error err, char *func)
 
 	if (e->flags & SJSON_FLAG_PRINT_ERRORS && err != SJSON_ERROR_OK)
 	{
-		ft_dprintf(e->fd_error, "%s: JSON parsing error: %s\n", func,
+		dprintf(e->fd_error, "%s: JSON parsing error: %s\n", func,
 		(err < 11 && err > 0) ? error_strings[err] : "how did you get this?");
 		len = i_sjson_extract_line(e, &line, &column, &start);
-		ft_dprintf(e->fd_error, "%s:%d:%d:\n", e->path, line + 1, column + 1);
+		dprintf(e->fd_error, "%s:%d:%d:\n", e->path, line + 1, column + 1);
 		line = start[len];
 		start[len] = '\0';
-		ft_dprintf(e->fd_error, "%s\n", start);
+		dprintf(e->fd_error, "%s\n", start);
 		start[len] = line;
 		len = -1;
 		while (++len < column)

@@ -34,8 +34,9 @@ void	test_string_ok(t_sjson_string *str, char *expected)
 int		main(void)
 {
 	t_sjson_value		*root;
-	t_sjson_real		real;
-	t_sjson_boolean		bol;
+	t_sjson_real		real = 42.0;
+	t_sjson_boolean		bol = 0;
+	int					r;
 
 	write(1, "expected:\n{\n\t\"a\": [1, true],\n\t\"b\": \"ok\"\n}\n", 42);
 	if (sjson_parse_file("test.json", &root, SJSON_FLAG_PRINT_ERRORS, 2)
@@ -44,10 +45,12 @@ int		main(void)
 	write(1, "got:\n", 5);
 	sjson_print(1, root, 0);
 	write(1, "\n", 1);
-	if (sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
+	printf("void*: %d, size_t: %d, func: %d\n", sizeof(void*), sizeof(size_t), sizeof(t_sjson_call_back));
+	if ((r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
 		"a", (size_t)0, &real, (size_t)1, &bol,
-		"b", test_string_ok, "ok"))
+		"b", test_string_ok, "ok")))
 		write(2, "error on accesses\n", 18);
+	printf("retrieved %d values\n", r);
 	printf("real: %f\nboolean: %d\n", real, bol);
 	sjson_free(root);
 	return (0);

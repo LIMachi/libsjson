@@ -13,7 +13,7 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <libft.h>
+#include <string.h> //FIXME
 
 t_sjson_error	sjson_parse_str(char *src,
 								t_sjson_value **out,
@@ -27,7 +27,7 @@ t_sjson_error	sjson_parse_str(char *src,
 	if ((*out = malloc(sizeof(t_sjson_value))) == NULL)
 		return (SJSON_ERROR_OUT_OF_MEMORY);
 	e.src = src;
-	e.slimit = ft_strlen(e.src);
+	e.slimit = strlen(e.src);
 	e.limit = &e.src[e.slimit];
 	e.pos = 0;
 	e.fd_error = fd_error;

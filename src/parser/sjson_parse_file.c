@@ -13,8 +13,10 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <libft.h>
+#include <string.h> //FIXME
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 static inline t_sjson_error	i_finishing_touch(t_sjson_env *e,
 	t_sjson_value **out,

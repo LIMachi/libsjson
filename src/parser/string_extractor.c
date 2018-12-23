@@ -13,7 +13,7 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <libft.h>
+#include <string.h> //FIXME
 
 /*
 ** will try to extract the bound englobed string starting at src
@@ -26,7 +26,7 @@ t_sjson_error	string_extractor(t_sjson_env *e,
 	char	*bound;
 	size_t	len;
 
-	if (!(bound = ft_strchr(SJSON_STRING_BOUNDS, e->src[e->pos])))
+	if (!(bound = strchr(SJSON_STRING_BOUNDS, e->src[e->pos])))
 		return (sjson_error(e, SJSON_ERROR_INVALID_BOUND, "string_extractor"));
 	len = 1;
 	while (len + e->pos < e->slimit && e->src[len + e->pos] != '\0'
@@ -40,7 +40,7 @@ t_sjson_error	string_extractor(t_sjson_env *e,
 	if ((*out = malloc(sizeof(t_sjson_string) + len + 1)) == NULL)
 		return (sjson_error(e, SJSON_ERROR_OUT_OF_MEMORY, "string_extractor"));
 	(*out)->length = len;
-	(void)ft_memcpy((*out)->data, &e->src[e->pos + 1], len);
+	(void)memcpy((*out)->data, &e->src[e->pos + 1], len);
 	(*out)->data[len] = 0;
 	e->pos += 2 + len;
 	return (SJSON_ERROR_OK);

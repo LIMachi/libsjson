@@ -12,7 +12,6 @@
 
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
-#include <libft.h>
 
 t_sjson_error	sjson_test_type(const t_sjson_value *value,
 								const t_sjson_value_type type)
