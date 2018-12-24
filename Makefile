@@ -3,9 +3,8 @@ NAME := libsjson.a
 ARG_TEST +=
 
 OBJ_DIR := .obj
-DEP_DIR := .dep
 
-TEST_SRC := test.c
+TEST_SRCS := test.c
 
 SRCS := src/explorer/sjson_explorer.c              \
         src/explorer/sjson_search_index_in_array.c \
@@ -26,66 +25,9 @@ SRCS := src/explorer/sjson_explorer.c              \
         src/sjson_free.c                           \
         src/ft_clear.c
 
-OBJS := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
-TEST_OBJ := $(patsubst %.c, $(OBJ_DIR)/%.o, $(TEST_SRC))
-
-CFLAGS += -Iinc -Wall -Wextra -Werror
+CFLAGS += -Iinc
 LDLIBS +=
+PRE_TEST :=
+CLIB := ../swiss-table/swiss-table.a
 
-ifneq ($(DEBUG), )
-PRE_TEST += valgrind
-CFLAGS += -g
-endif
-
-ifneq ($(SANITIZE), )
-CFLAGS += -g -fsanitize=address
-LDLIBS += -fsanitize=address
-endif
-
-#if neither DEBUG nor SANITIZE is set
-ifneq ($(DEBUG), )
-ifneq ($(SANITIZE), )
-CFLAGS += -O3
-endif
-endif
-
-ifneq ($(SWT_KEY_TYPE), )
-CFLAGS += -DSWT_KEY_TYPE=$(SWT_KEY_TYPE)
-endif
-
-ifneq ($(SWT_VALUE_TYPE), )
-CFLAGS += -DSWT_VALUE_TYPE=$(SWT_VALUE_TYPE)
-endif
-
-.PHONY: all clean fclean re test
-.PRECIOUS: $(OBJ_DIR)/. $(OBJ_DIR)%/.
-
-all: $(NAME)
-
-test: test.bin
-	$(PRE_TEST) ./test.bin $(TEST_ARG)
-
-$(NAME): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $?
-
-test.bin: $(TEST_OBJ) | $(NAME)
-	$(CC) $(LDFLAGS) $^ $| $(LDLIBS) -o $@
-
-$(OBJ_DIR)/.:
-	mkdir -p $@
-
-$(OBJ_DIR)%/.:
-	mkdir -p $@
-
-clean:
-	$(RM) -rf $(OBJ_DIR)
-	$(RM) -f test.bin
-
-fclean: clean
-	$(RM) -rf $(NAME)
-
-re: | fclean all
-
-.SECONDEXPANSION:
-$(OBJ_DIR)/%.o: %.c | $$(@D)/.
-	$(CC) $(CFLAGS) -c $< -o $@
+include ../Makefiles/lib.mk
