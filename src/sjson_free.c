@@ -15,7 +15,9 @@
 
 void	sjson_free(t_sjson_value *value)
 {
-	size_t	i;
+	size_t			i;
+	char			*key;
+	t_sjson_value	*tmp;
 
 	if (value == NULL)
 		return ;
@@ -34,7 +36,14 @@ void	sjson_free(t_sjson_value *value)
 	}
 	else if (value->type == SJSON_TYPE_OBJECT)
 	{
-		i = -1;
+		i = 0;
+		while (ft_swiss_table_iterate(&value->data.obj, &i, (void**)&key, (void**)&tmp))
+		{
+			free(key);
+			sjson_free(tmp);
+		}
+		ft_swiss_table_destroy(&value->data.obj);
+/*		i = -1;
 		while (++i < value->data.obj.nb_pairs)
 		{
 			free(value->data.obj.pairs[i]->key);
@@ -45,7 +54,7 @@ void	sjson_free(t_sjson_value *value)
 			value->data.obj.pairs[i] = NULL;
 		}
 		free(value->data.obj.pairs);
-		value->data.obj.pairs = NULL;
+		value->data.obj.pairs = NULL;*/
 	}
 	value->parent = NULL;
 	value->type = SJSON_TYPE_INVALID;

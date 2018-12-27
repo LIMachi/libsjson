@@ -28,6 +28,12 @@
 
 # include <stdarg.h>
 
+/*
+** typedef t_swt_map
+*/
+
+# include "../../swiss-table/inc/ft_swiss_table.h"
+
 typedef int						t_sjson_boolean;
 typedef double					t_sjson_real;
 
@@ -54,7 +60,11 @@ typedef enum					e_sjson_flags
 	SJSON_FLAG_PRINT_ERRORS = 1
 }								t_sjson_flags;
 
-typedef struct s_sjson_object	t_sjson_object;
+/*
+** typedef struct s_sjson_object t_sjson_object;
+*/
+
+typedef t_swt_map				t_sjson_object;
 typedef struct s_sjson_pair		t_sjson_pair;
 typedef struct s_sjson_value	t_sjson_value;
 typedef struct s_sjson_array	t_sjson_array;

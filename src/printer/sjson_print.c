@@ -44,9 +44,32 @@ static inline int		sjson_print_1(int fd,
 									int flags,
 									int out)
 {
-	size_t	i;
+	size_t			i;
+	size_t			c;
+	char			*key;
+	t_sjson_value	*value;
 
 	out += sjson_print_2(fd, val, flags, out);
+	if (val->type == SJSON_TYPE_OBJECT)
+	{
+		out += write(fd, SJSON_OBJECT_STARTERS[0],
+			strlen(SJSON_OBJECT_STARTERS[0]));
+		i = 0;
+		c = 0;
+		while (ft_swiss_table_iterate(&val->data.obj, &i, (void**)&key, (void**)&value))
+		{
+			out += write(fd, SJSON_STRING_BOUNDS, 1);
+			out += write(fd, key, strlen(key));
+			out += write(fd, SJSON_STRING_BOUNDS, 1);
+			out += write(fd, SJSON_PAIR_SEPARATORS, 1);
+			out += sjson_print(fd, value, flags);
+			if (++c < val->data.obj.pair_count)
+				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
+		}
+		out += write(fd, SJSON_OBJECT_ENDERS[0],
+			strlen(SJSON_OBJECT_ENDERS[0]));
+	}
+	/*
 	if (val->type == SJSON_TYPE_OBJECT)
 	{
 		out += write(fd, SJSON_OBJECT_STARTERS[0],
@@ -66,6 +89,7 @@ static inline int		sjson_print_1(int fd,
 		out += write(fd, SJSON_OBJECT_ENDERS[0],
 			strlen(SJSON_OBJECT_ENDERS[0]));
 	}
+	*/
 	return (out);
 }
 

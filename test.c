@@ -46,10 +46,9 @@ int		main(void)
 	sjson_print(1, root, 0);
 	write(1, "\n", 1);
 	printf("void*: %d, size_t: %d, func: %d\n", sizeof(void*), sizeof(size_t), sizeof(t_sjson_call_back));
-	if ((r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
+	r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
 		"a", (size_t)0, &real, (size_t)1, &bol,
-		"b", test_string_ok, "ok")))
-		write(2, "error on accesses\n", 18);
+		"b", test_string_ok, "ok");
 	printf("retrieved %d values\n", r);
 	printf("real: %f\nboolean: %d\n", real, bol);
 	sjson_free(root);

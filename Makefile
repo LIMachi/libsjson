@@ -29,5 +29,8 @@ CFLAGS += -Iinc
 LDLIBS +=
 PRE_TEST :=
 CLIB := ../swiss-table/swiss-table.a
+#CLIB := swiss_table
+#swiss_table_LDLIBS := ../swiss-table/swiss-table.a
+#swiss_table_CFLAGS := '-DSWT_KEY_TYPE=char* -DSWT_VALUE_TYPE=t_sjson_value* -DSWT_INCLUDE=../../libsjson/inc/sjson_types.h'
 
 include ../Makefiles/lib.mk

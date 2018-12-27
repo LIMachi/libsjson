@@ -20,7 +20,7 @@ t_sjson_error	sjson_test_type(const t_sjson_value *value,
 		return (0);
 	if ((value->type & SJSON_TYPE_ARRAY) && value->data.ar.values == NULL)
 		return (0);
-	if ((value->type & SJSON_TYPE_OBJECT) && value->data.obj.pairs == NULL)
+	if ((value->type & SJSON_TYPE_OBJECT) && value->data.obj.nb_groups == 0)
 		return (0);
 	if ((value->type & SJSON_TYPE_STRING) && value->data.str == NULL)
 		return (0);
