@@ -1,10 +1,6 @@
+include ../Makefiles/default_var.mk
+
 NAME := libsjson.a
-
-ARG_TEST +=
-
-OBJ_DIR := .obj
-
-TEST_SRCS := test.c
 
 SRCS := src/explorer/sjson_explorer.c              \
         src/explorer/sjson_search_index_in_array.c \
@@ -25,12 +21,6 @@ SRCS := src/explorer/sjson_explorer.c              \
         src/sjson_free.c                           \
         src/ft_clear.c
 
-CFLAGS += -Iinc
-LDLIBS +=
-PRE_TEST :=
 CLIB := ../swiss-table/swiss-table.a
-#CLIB := swiss_table
-#swiss_table_LDLIBS := ../swiss-table/swiss-table.a
-#swiss_table_CFLAGS := '-DSWT_KEY_TYPE=char* -DSWT_VALUE_TYPE=t_sjson_value* -DSWT_INCLUDE=../../libsjson/inc/sjson_types.h'
 
 include ../Makefiles/lib.mk
