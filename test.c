@@ -41,11 +41,11 @@ int		main(void)
 	write(1, "expected:\n{\n\t\"a\": [1, true],\n\t\"b\": \"ok\"\n}\n", 42);
 	if (sjson_parse_file("test.json", &root, SJSON_FLAG_PRINT_ERRORS, 2)
 			!= SJSON_ERROR_OK)
-		write(2, "error while parsing\n", 20);
+		return (write(2, "error while parsing\n", 20));
 	write(1, "got:\n", 5);
 	sjson_print(1, root, 0);
 	write(1, "\n", 1);
-	printf("void*: %d, size_t: %d, func: %d\n", sizeof(void*), sizeof(size_t), sizeof(t_sjson_call_back));
+	printf("void*: %d, size_t: %d, func: %d\n", (int)sizeof(void*), (int)sizeof(size_t), (int)sizeof(t_sjson_call_back));
 	r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
 		"a", (size_t)0, &real, (size_t)1, &bol,
 		"b", test_string_ok, "ok");

@@ -135,7 +135,7 @@ typedef struct					s_jae
 	int					error_stack;
 	int					valid;
 	t_sjson_error		e;
-	va_list				ap;
+	va_list				*ap;
 }								t_jae;
 
 typedef struct					s_sjson_env

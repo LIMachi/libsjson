@@ -4,7 +4,6 @@ CMakeLists.txt
 *.a
 *.o
 *.bin
-*.json
 .obj
 .dep
 .items
