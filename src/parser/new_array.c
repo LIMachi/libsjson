@@ -15,7 +15,7 @@
 #include "../../inc/sjson_functions.h"
 #include <string.h> //FIXME
 
-#ifndef __FreeBSD__
+#if !defined(__FreeBSD__) && !defined(__APPLE__)
 
 static void	*reallocf(void *ptr, size_t size)
 {
