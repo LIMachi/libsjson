@@ -8,3 +8,4 @@ CMakeLists.txt
 .dep
 .items
 .DS_Store
+.srcs
