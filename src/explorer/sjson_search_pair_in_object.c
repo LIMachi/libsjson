@@ -20,7 +20,7 @@ t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 {
 	if (!sjson_test_type(v, SJSON_TYPE_OBJECT))
 		return (SJSON_ERROR_MISMATCHED_NODE_TYPE);
-	if ((*out = ft_swiss_table_find(&v->data.obj, (void*)str)) == NULL)
+	if ((*out = ft_swiss_table_find(&v->data.obj, (void*)str, NULL)) == NULL)
 		return (SJSON_ERROR_TARGET_NOT_FOUND);
 	return (SJSON_ERROR_OK);
 }
