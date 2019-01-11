@@ -73,4 +73,13 @@ t_sjson_error	sjson_error(t_sjson_env *e, t_sjson_error err, char *func);
 
 void			*ft_clear(char *form, ...);
 
+char			*sstrchr(char *str, int c);
+int				sstrncmp(char *str1, char *str2, size_t n);
+int				sstrcmp(char *str1, char *str2);
+char			*sstrdup(char *str);
+size_t			sstrlen(char *str);
+
+int				sisdigit(int c);
+int				sisspace(int c);
+
 #endif

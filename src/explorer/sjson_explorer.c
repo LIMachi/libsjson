@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <ctype.h> //FIXME
 
 inline static int	i_right(t_jae *e)
 {
@@ -133,7 +132,7 @@ int					sjson_explorer(const t_sjson_value *root,
 			e.node = (t_sjson_value *)root;
 			e.error_stack = 0;
 		}
-		else if (isspace(form[pos]))
+		else if (sisspace(form[pos]))
 			;
 		else if (!i_type_change(&e, form[pos]) && !i_access(&e, form[pos]))
 		{

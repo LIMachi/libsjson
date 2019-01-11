@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/sjson.h"
+#include <sjson.h>
+#include <sjson_functions.h>
 #include <unistd.h>
-#include <string.h> //FIXME
-#include <stdio.h> //FIXME
+#include <stdio.h>
 
 static inline int		sjson_print_2(int fd,
 									t_sjson_value *val,
@@ -25,7 +25,7 @@ static inline int		sjson_print_2(int fd,
 	if (val->type == SJSON_TYPE_ARRAY)
 	{
 		out += write(fd, SJSON_ARRAY_STARTERS[0],
-			strlen(SJSON_ARRAY_STARTERS[0]));
+			sstrlen(SJSON_ARRAY_STARTERS[0]));
 		i = -1;
 		while (++i < val->data.ar.nb_values)
 		{
@@ -34,7 +34,7 @@ static inline int		sjson_print_2(int fd,
 				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
 		}
 		out += write(fd, SJSON_ARRAY_ENDERS[0],
-			strlen(SJSON_ARRAY_ENDERS[0]));
+			sstrlen(SJSON_ARRAY_ENDERS[0]));
 	}
 	return (out);
 }
@@ -53,43 +53,21 @@ static inline int		sjson_print_1(int fd,
 	if (val->type == SJSON_TYPE_OBJECT)
 	{
 		out += write(fd, SJSON_OBJECT_STARTERS[0],
-			strlen(SJSON_OBJECT_STARTERS[0]));
+			sstrlen(SJSON_OBJECT_STARTERS[0]));
 		i = 0;
 		c = 0;
-		while (ft_swiss_table_iterate(&val->data.obj, &i, (void**)&key, (void**)&value))
+		while (ft_swiss_table_iterate(&val->data.obj, &i, (void**)&key,
+			(void**)&value))
 		{
-			out += write(fd, SJSON_STRING_BOUNDS, 1);
-			out += write(fd, key, strlen(key));
-			out += write(fd, SJSON_STRING_BOUNDS, 1);
-			out += write(fd, SJSON_PAIR_SEPARATORS, 1);
-			out += sjson_print(fd, value, flags);
+			out += write(fd, SJSON_STRING_BOUNDS, 1) + write(fd, key,
+				sstrlen(key)) + write(fd, SJSON_STRING_BOUNDS, 1) + write(fd,
+					SJSON_PAIR_SEPARATORS, 1) + sjson_print(fd, value, flags);
 			if (++c < val->data.obj.pair_count)
 				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
 		}
 		out += write(fd, SJSON_OBJECT_ENDERS[0],
-			strlen(SJSON_OBJECT_ENDERS[0]));
+			sstrlen(SJSON_OBJECT_ENDERS[0]));
 	}
-	/*
-	if (val->type == SJSON_TYPE_OBJECT)
-	{
-		out += write(fd, SJSON_OBJECT_STARTERS[0],
-			strlen(SJSON_OBJECT_STARTERS[0]));
-		i = -1;
-		while (++i < val->data.obj.nb_pairs)
-		{
-			out += write(fd, SJSON_STRING_BOUNDS, 1);
-			out += write(fd, val->data.obj.pairs[i]->key->data,
-				val->data.obj.pairs[i]->key->length);
-			out += write(fd, SJSON_STRING_BOUNDS, 1);
-			out += write(fd, SJSON_PAIR_SEPARATORS, 1);
-			out += sjson_print(fd, val->data.obj.pairs[i]->value, flags);
-			if (i + 1 < val->data.obj.nb_pairs)
-				out += write(fd, SJSON_ARRAY_SEPARATORS, 1);
-		}
-		out += write(fd, SJSON_OBJECT_ENDERS[0],
-			strlen(SJSON_OBJECT_ENDERS[0]));
-	}
-	*/
 	return (out);
 }
 

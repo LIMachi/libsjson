@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
 
 t_sjson_error	pair_extractor(t_sjson_env *e,
 								t_sjson_pair *out,
@@ -27,7 +26,7 @@ t_sjson_error	pair_extractor(t_sjson_env *e,
 		return (error);
 	if ((error = jump_blanks(e)) != SJSON_ERROR_OK)
 		return (error);
-	if (strchr(SJSON_PAIR_SEPARATORS, e->src[e->pos]) == NULL)
+	if (sstrchr(SJSON_PAIR_SEPARATORS, e->src[e->pos]) == NULL)
 		return (sjson_error(e, SJSON_ERROR_INVALID_SEPARATOR,
 			"pair_extractor"));
 		++e->pos;

@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
 
 #if SJSON_EXTEND
 
@@ -32,18 +31,18 @@ t_sjson_error	jump_blanks(t_sjson_env *e)
 	while (42)
 	{
 		while (e->pos < e->slimit && e->src[e->pos] != '\0'
-				&& strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
+				&& sstrchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
 			++e->pos;
 		if (e->pos == e->slimit || e->src[e->pos] == '\0')
 			return (SJSON_ERROR_END_OF_FILE);
 		comment_type = 0;
-		while (comment_type < 3 && strncmp((char*)starters[comment_type],
+		while (comment_type < 3 && sstrncmp((char*)starters[comment_type],
 					&e->src[e->pos], e->slimit - e->pos))
 			++comment_type;
 		if (comment_type == 3)
 			return (SJSON_ERROR_OK);
 		while (e->pos < e->slimit && e->src[e->pos] != '\0'
-				&& strncmp((char*)enders[comment_type], &e->src[e->pos],
+				&& sstrncmp((char*)enders[comment_type], &e->src[e->pos],
 					e->slimit - e->pos))
 			++e->pos;
 		if (e->pos == e->slimit || e->src[e->pos] == '\0')
@@ -57,7 +56,7 @@ t_sjson_error	jump_blanks(t_sjson_env *e)
 t_sjson_error	jump_blanks(t_sjson_env *e)
 {
 	while (e->pos < e->slimit && e->src[e->pos] != '\0'
-			&& strchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
+			&& sstrchr(SJSON_BLANKS, e->src[e->pos]) != NULL)
 		++e->pos;
 	if (e->pos == e->slimit && e->src[e->pos] == '\0')
 		return (sjson_error(e, SJSON_ERROR_END_OF_FILE, "jump_blanks"));

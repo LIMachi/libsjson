@@ -13,8 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
-#include <ctype.h> //FIXME
 
 #if SJSON_EXTEND
 
@@ -26,7 +24,7 @@ t_sjson_error	new_real(t_sjson_env *e,
 
 	tc = *e->limit;
 	*e->limit = '\0';
-	out->data.SJSON_TYPE_REAL = strtod(&e->src[e->pos], &tmp);
+	out->data.real = strtod(&e->src[e->pos], &tmp);
 	e->pos = (size_t)(tmp - &e->src[e->pos]);
 	*e->limit = tc;
 	return (SJSON_ERROR_OK);
@@ -50,10 +48,10 @@ t_sjson_error	new_real_exponent(t_sjson_env *e,
 	ex = 0;
 	if (e->pos >= e->slimit)
 		return (sjson_error(e, SJSON_ERROR_END_OF_FILE, "new_real_exponent"));
-	if (!isdigit(e->src[e->pos]))
+	if (!sisdigit(e->src[e->pos]))
 		return (sjson_error(e, SJSON_ERROR_INVALID_SYNTAX,
 			"new_real_exponent"));
-		while (e->pos < e->slimit && isdigit(e->src[e->pos]))
+		while (e->pos < e->slimit && sisdigit(e->src[e->pos]))
 		ex = ex * 10 + e->src[e->pos++] - '0';
 	if (esign)
 		while (ex--)
@@ -78,10 +76,10 @@ t_sjson_error	new_real_2(t_sjson_env *e,
 	{
 		if (++e->pos >= e->slimit)
 			return (sjson_error(e, SJSON_ERROR_END_OF_FILE, "new_real_2"));
-		if (!isdigit(e->src[e->pos]))
+		if (!sisdigit(e->src[e->pos]))
 			return (sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_real_2"));
 		tmp2 = 1.0;
-		while (e->pos < e->slimit && isdigit(e->src[e->pos]))
+		while (e->pos < e->slimit && sisdigit(e->src[e->pos]))
 		{
 			tmp = tmp * 10.0 + (t_sjson_real)(e->src[e->pos++] - '0');
 			tmp2 *= 10.0;
@@ -114,8 +112,8 @@ t_sjson_error	new_real(t_sjson_env *e,
 		tmp = 0.0;
 		++e->pos;
 	}
-	else if (isdigit(e->src[e->pos]) && !(tmp = 0))
-		while (e->pos < e->slimit && isdigit(e->src[e->pos]))
+	else if (sisdigit(e->src[e->pos]) && !(tmp = 0))
+		while (e->pos < e->slimit && sisdigit(e->src[e->pos]))
 			tmp = tmp * 10.0 + (t_sjson_real)(e->src[e->pos++] - '0');
 	else
 		return (sjson_error(e, SJSON_ERROR_INVALID_SYNTAX, "new_real"));

@@ -13,7 +13,7 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <stdio.h> //FIXME
+#include <stdio.h>
 #include <unistd.h>
 
 static inline int	i_sjson_extract_line(t_sjson_env *e,

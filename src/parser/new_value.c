@@ -13,13 +13,11 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
-#include <ctype.h> //FIXME
 
 static inline t_sjson_value_type	evaluate_type(t_sjson_env *e,
 												t_sjson_value *out)
 {
-	if (strchr(SJSON_STRING_BOUNDS, e->src[e->pos]) != NULL)
+	if (sstrchr(SJSON_STRING_BOUNDS, e->src[e->pos]) != NULL)
 		return (out->type = SJSON_TYPE_STRING);
 	if (in_set(e, SJSON_OBJECT_STARTERS, SJSON_OBJECT_COUNT, 1)
 			== SJSON_ERROR_OK)
@@ -39,7 +37,7 @@ static inline t_sjson_value_type	evaluate_type(t_sjson_env *e,
 		return (out->type = SJSON_TYPE_BOOLEAN);
 	}
 	if (e->src[e->pos] == '-' || (SJSON_EXTEND && e->src[e->pos] == '+')
-			|| (isdigit(e->src[e->pos]))
+			|| (sisdigit(e->src[e->pos]))
 			|| (SJSON_EXTEND && e->src[e->pos] == '.'))
 		return (out->type = SJSON_TYPE_REAL);
 	return (out->type = SJSON_TYPE_INVALID);

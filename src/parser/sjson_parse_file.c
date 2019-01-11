@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -35,7 +34,7 @@ static inline t_sjson_error	i_finishing_touch(t_sjson_env *e,
 	return (err);
 }
 
-t_sjson_error	sjson_parse_file(const char *path,
+t_sjson_error				sjson_parse_file(const char *path,
 	t_sjson_value **out,
 	t_sjson_flags flags,
 	int fd_error)

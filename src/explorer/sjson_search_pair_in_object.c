@@ -13,7 +13,6 @@
 #include "../../inc/sjson_defines.h"
 #include "../../inc/sjson_types.h"
 #include "../../inc/sjson_functions.h"
-#include <string.h> //FIXME
 
 t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 											const char *str,

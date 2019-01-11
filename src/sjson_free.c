@@ -13,20 +13,13 @@
 #include "sjson.h"
 #include "sjson_functions.h"
 
-void	sjson_free(t_sjson_value *value)
+static inline void	i_sjson_free(t_sjson_value *value)
 {
 	size_t			i;
 	char			*key;
 	t_sjson_value	*tmp;
 
-	if (value == NULL)
-		return ;
-	if (value->type == SJSON_TYPE_STRING)
-	{
-		free(value->data.str);
-		value->data.str = NULL;
-	}
-	else if (value->type == SJSON_TYPE_ARRAY)
+	if (value->type == SJSON_TYPE_ARRAY)
 	{
 		i = -1;
 		while (++i < value->data.ar.nb_values)
@@ -37,25 +30,27 @@ void	sjson_free(t_sjson_value *value)
 	else if (value->type == SJSON_TYPE_OBJECT)
 	{
 		i = 0;
-		while (ft_swiss_table_iterate(&value->data.obj, &i, (void**)&key, (void**)&tmp))
+		while (ft_swiss_table_iterate(&value->data.obj, &i,
+			(void**)&key, (void**)&tmp))
 		{
 			free(key);
 			sjson_free(tmp);
 		}
 		ft_swiss_table_destroy(&value->data.obj);
-/*		i = -1;
-		while (++i < value->data.obj.nb_pairs)
-		{
-			free(value->data.obj.pairs[i]->key);
-			value->data.obj.pairs[i]->key = NULL;
-			sjson_free(value->data.obj.pairs[i]->value);
-			value->data.obj.pairs[i]->value = NULL;
-			free(value->data.obj.pairs[i]);
-			value->data.obj.pairs[i] = NULL;
-		}
-		free(value->data.obj.pairs);
-		value->data.obj.pairs = NULL;*/
 	}
+}
+
+void				sjson_free(t_sjson_value *value)
+{
+	if (value == NULL)
+		return ;
+	if (value->type == SJSON_TYPE_STRING)
+	{
+		free(value->data.str);
+		value->data.str = NULL;
+	}
+	else
+		i_sjson_free(value);
 	value->parent = NULL;
 	value->type = SJSON_TYPE_INVALID;
 	free(value);
