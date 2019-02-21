@@ -14,14 +14,6 @@
 # define SJSON_TYPES_H
 
 /*
-** stdlib.h
-** typedef size_t
-** #define NULL
-*/
-
-# include <stdlib.h>
-
-/*
 ** stdarg.h
 ** va_list
 */
@@ -32,26 +24,27 @@
 ** typedef t_swt_map
 */
 
-# include "../../swiss-table/inc/ft_swiss_table.h"
+# include <ft_swiss_table.h>
 
 typedef int						t_sjson_boolean;
 typedef double					t_sjson_real;
+typedef size_t					t_sjson_size;
 
 typedef enum					e_sjson_error
 {
-	SJSON_ERROR_KO = -1,
 	SJSON_ERROR_OK = 0,
-	SJSON_ERROR_END_OF_FILE = 1,
-	SJSON_ERROR_OUT_OF_MEMORY = 2,
-	SJSON_ERROR_INVALID_SYNTAX = 3,
-	SJSON_ERROR_INVALID_SEPARATOR = 4,
-	SJSON_ERROR_INVALID_BOUND = 5,
-	SJSON_ERROR_MISSING_ENDING_BOUND = 6,
-	SJSON_ERROR_INVALID_PARAMETER = 7,
-	SJSON_ERROR_MISMATCHED_NODE_TYPE = 8,
-	SJSON_ERROR_TARGET_NOT_FOUND = 9,
-	SJSON_ERROR_MISSING_COMMENT_ENDER = 10,
-	SJSON_ERROR_FILE_ACCESS = 11
+	SJSON_ERROR_KO = -1,
+	SJSON_ERROR_END_OF_FILE = -2,
+	SJSON_ERROR_OUT_OF_MEMORY = -3,
+	SJSON_ERROR_INVALID_SYNTAX = -4,
+	SJSON_ERROR_INVALID_SEPARATOR = -5,
+	SJSON_ERROR_INVALID_BOUND = -6,
+	SJSON_ERROR_MISSING_ENDING_BOUND = -7,
+	SJSON_ERROR_INVALID_PARAMETER = -8,
+	SJSON_ERROR_MISMATCHED_NODE_TYPE = -9,
+	SJSON_ERROR_TARGET_NOT_FOUND = -10,
+	SJSON_ERROR_MISSING_COMMENT_ENDER = -11,
+	SJSON_ERROR_FILE_ACCESS = -12
 }								t_sjson_error;
 
 typedef enum					e_sjson_flags
@@ -81,7 +74,10 @@ typedef enum					e_sjson_value_type
 	SJSON_TYPE_ARRAY = 0x8,
 	SJSON_TYPE_OBJECT = 0x10,
 	SJSON_TYPE_REAL = 0x20,
-	SJSON_TYPE_STRING = 0x40
+	SJSON_TYPE_STRING = 0x40,
+	SJSON_TYPE_LENGTH = 0x80,
+	SJSON_TYPE_CALL_PAIR = 0x100,
+	SJSON_TYPE_CALL_COMMON = 0x200
 }								t_sjson_value_type;
 
 typedef t_sjson_error			(*t_sjson_call_back)(void *, void *,
@@ -89,7 +85,7 @@ typedef t_sjson_error			(*t_sjson_call_back)(void *, void *,
 
 struct							s_sjson_string
 {
-	size_t				length;
+	t_sjson_size		length;
 	char				data[0];
 };
 
@@ -101,13 +97,13 @@ struct							s_sjson_pair
 
 struct							s_sjson_object
 {
-	size_t				nb_pairs;
+	t_sjson_size		nb_pairs;
 	t_sjson_pair		**pairs;
 };
 
 struct							s_sjson_array
 {
-	size_t				nb_values;
+	t_sjson_size		nb_values;
 	t_sjson_value		**values;
 };
 
@@ -128,15 +124,35 @@ struct							s_sjson_value
 	t_sjson_data		data;
 };
 
+typedef union u_jae_arg		t_jae_arg;
+
 typedef struct					s_jae
 {
+	t_sjson_value		*root;
 	t_sjson_value		*node;
 	t_sjson_value_type	etype;
 	int					error_stack;
 	int					valid;
 	t_sjson_error		e;
-	va_list				*ap;
+	int					nb_arg;
+	int					extra_arg;
+	int					cur_arg;
+	t_jae_arg			*args;
 }								t_jae;
+
+typedef struct					s_jae_call_pair
+{
+	t_sjson_call_back	*cb;
+	void				*ptr;
+}								t_jae_call_pair;
+
+union							u_jae_arg
+{
+	t_jae_call_pair		call_pair;
+	void				*ptr;
+	char				*key;
+	t_sjson_size		index;
+};
 
 typedef struct					s_sjson_env
 {

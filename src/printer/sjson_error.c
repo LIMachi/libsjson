@@ -48,7 +48,7 @@ t_sjson_error		sjson_error(t_sjson_env *e, t_sjson_error err, char *func)
 	int			column;
 	int			line;
 	char		*start;
-	const char	*error_strings[] = {"ok", "end of file reached",
+	const char	*error_strings[] = {"ok", "ko", "end of file reached",
 		"out of memory", "invalid syntax", "invalid separator", "invalid bound",
 		"invalid ending bound", "invalid parameter", "mismatched node type",
 		"target not found", "missing comment ender"};
@@ -56,7 +56,7 @@ t_sjson_error		sjson_error(t_sjson_env *e, t_sjson_error err, char *func)
 	if (e->flags & SJSON_FLAG_PRINT_ERRORS && err != SJSON_ERROR_OK)
 	{
 		dprintf(e->fd_error, "%s: JSON parsing error: %s\n", func,
-		(err < 11 && err > 0) ? error_strings[err] : "how did you get this?");
+		(err > -12 && err < -1) ? error_strings[-err] : "how did you get this?");
 		len = i_sjson_extract_line(e, &line, &column, &start);
 		dprintf(e->fd_error, "%s:%d:%d:\n", e->path, line + 1, column + 1);
 		line = start[len];
