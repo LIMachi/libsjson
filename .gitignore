@@ -9,3 +9,4 @@ CMakeLists.txt
 .items
 .DS_Store
 .srcs
+*.dSYM

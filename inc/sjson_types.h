@@ -80,7 +80,16 @@ typedef enum					e_sjson_value_type
 	SJSON_TYPE_CALL_COMMON = 0x200
 }								t_sjson_value_type;
 
-typedef t_sjson_error			(*t_sjson_call_back)(void *node, void *user,
+typedef struct s_sjson_arg_pair		t_sjson_arg_pair;
+
+struct								s_sjson_arg_pair
+{
+	void			*ptr;
+	t_sjson_size	index;
+};
+
+typedef t_sjson_error			(*t_sjson_call_back)(void *node,
+													t_sjson_arg_pair arg,
 													t_sjson_value_type type,
 													void *key_index);
 
@@ -135,9 +144,10 @@ typedef struct					s_jae
 	int					error_stack;
 	int					valid;
 	t_sjson_error		e;
-	int					nb_arg;
+	t_sjson_size		nb_arg;
 	int					extra_arg;
-	int					cur_arg;
+	t_sjson_size		cur_arg;
+	t_sjson_size		call_count;
 	t_jae_arg			*args;
 	void				*key_index;
 }								t_jae;

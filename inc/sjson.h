@@ -72,14 +72,15 @@ t_sjson_error	sjson_parse_file(const char *path,
 **       second argument: void *
 **     The function will recieve the current item (technically: a pointer to the
 **     data of the node, if not the node itself) as the first argument, the
-**     pointer passed in va_arg will be the second argument, the third is the
-**     type of the first argument and the last argument is the key or iteration
-**     (see subscript).
+**     second argument is a pair of the void* passed in va_arg paired with the
+**     index of the calls in the script/subscript, the third is the type of the
+**     first argument and the last argument is the key or iteration (see
+**     subscript).
 **     If no error where found, the callback must return SJSON_ERROR_OK
 **     If errors where found, the callback must return a negative value
 **     (suggested: SJSON_ERROR_KO)
-**   @: Like #, but the second argument of the callback is the very last element
-**     of the va_list (usefull for common structure data of callbacks)
+**   @: Like #, but the void* of the second element of the callback is the very
+**     last element of the va_list (usefull for common data structures)
 **   ?: Just test if the value is valid (increment the return value like a valid
 **     call to *, no argument is used)
 **   ~: Store the length (number of subnodes of lists/objetcs or characters in

@@ -17,16 +17,18 @@
 static inline void	i_object(const char *form, int form_length, t_jae *e,
 							t_jae se)
 {
-	t_sjson_value	*value;
 	size_t			it;
 	int				valid;
 
 	it = 0;
 	valid = 0;
 	while (ft_swiss_table_iterate(&e->node->data.obj, &it, &se.key_index,
-			(void**)&value) == 1)
+			(void**)&se.root) == 1)
+	{
+		se.node = se.root;
 		if (sjson_explorer_internal(form, form_length, &se) > 1)
 			valid = 1;
+	}
 	e->cur_arg += se.cur_arg;
 	if (valid)
 		++e->valid;
@@ -42,8 +44,12 @@ static inline void	i_array(const char *form, int form_length, t_jae *e,
 	se.key_index = (void*)&i;
 	valid = 0;
 	while (++i < e->node->data.ar.nb_values)
+	{
+		se.root = e->node->data.ar.values[i];
+		se.node = se.root;
 		if (sjson_explorer_internal(form, form_length, &se) > 1)
 			valid = 1;
+	}
 	e->cur_arg += se.cur_arg;
 	if (valid)
 		++e->valid;
@@ -59,6 +65,7 @@ int					sjson_explorer_subscript(const char *form, int form_length,
 	se = *e;
 	se.nb_arg -= e->cur_arg;
 	se.args = &e->args[e->cur_arg];
+	se.root = e->node;
 	fp = *i;
 	s = 1;
 	while (s && ++fp < form_length)
@@ -68,9 +75,9 @@ int					sjson_explorer_subscript(const char *form, int form_length,
 	if (!e->error_stack || !sjson_test_type(e->node, e->etype))
 	{
 		if (e->etype == SJSON_TYPE_OBJECT)
-			i_object(&form[*i], form_length - fp - *i, e, se);
+			i_object(&form[*i + 1], fp - *i - 1, e, se);
 		else if (e->etype == SJSON_TYPE_ARRAY)
-			i_array(&form[*i], form_length - fp - *i, e, se);
+			i_array(&form[*i + 1], fp - *i - 1, e, se);
 		else
 			e->e = SJSON_ERROR_INVALID_SYNTAX;
 	}

@@ -30,6 +30,8 @@ inline static int	i_type_change(t_jae *e, const char c)
 		return ((e->etype = SJSON_TYPE_NULL) || 1);
 	if (c == 'v')
 		return ((e->etype = SJSON_TYPE_NONE) || 1);
+	if (c == 'l')
+		return ((e->etype = SJSON_TYPE_LENGTH) || 1);
 	return (0);
 }
 
@@ -38,9 +40,9 @@ int		sjson_explorer_internal(const char *form, int form_length, t_jae *e)
 	int	i;
 
 	e->cur_arg = 0;
-	e->etype = SJSON_TYPE_NONE;
 	e->valid = 0;
 	e->error_stack = 0;
+	e->call_count = 0;
 	i = -1;
 	while (e->e == SJSON_ERROR_OK && ++i < form_length)
 		if (form[i] == '$')
@@ -51,8 +53,8 @@ int		sjson_explorer_internal(const char *form, int form_length, t_jae *e)
 		else if (sisspace(form[i]));
 		else if (!i_type_change(e, form[i])
 				&& !sjson_explorer_access(form, form_length, e, &i))
-			return (SJSON_ERROR_INVALID_SYNTAX);
-	return (e->e == SJSON_ERROR_OK ? e->valid : e->e);
+			return (e->e = SJSON_ERROR_INVALID_SYNTAX);
+	return (e->e);
 }
 
 static inline int	sjson_explorer_prepare(const t_sjson_value *root,
@@ -64,10 +66,10 @@ static inline int	sjson_explorer_prepare(const t_sjson_value *root,
 		.e = SJSON_ERROR_OK, .error_stack = 0, .etype = SJSON_TYPE_NONE,
 		.valid = 0, .extra_arg = 0, .key_index = NULL};
 	if (root == NULL || form == NULL)
-		return (SJSON_ERROR_INVALID_PARAMETER);
+		return (e->e = SJSON_ERROR_INVALID_PARAMETER);
 	i = -1;
 	while (form[++i] != '\0')
-		if (sstrchr("@*>~#", form[i]) != NULL)
+		if (sstrchr("@*>#", form[i]) != NULL)
 		{
 			if (form[i] == '@')
 				e->extra_arg = 1;
@@ -75,8 +77,8 @@ static inline int	sjson_explorer_prepare(const t_sjson_value *root,
 		}
 	if ((e->args = malloc(sizeof(t_jae_arg) * (e->nb_arg + e->extra_arg)))
 			== NULL)
-		return (SJSON_ERROR_OUT_OF_MEMORY);
-	return (SJSON_ERROR_OK);
+		return (e->e = SJSON_ERROR_OUT_OF_MEMORY);
+	return (e->e = SJSON_ERROR_OK);
 }
 
 static inline int	sjson_explorer_load_args(const char *form,
@@ -86,9 +88,9 @@ static inline int	sjson_explorer_load_args(const char *form,
 
 	i = -1;
 	while (form[++i] != '\0')
-		if (sstrchr("oasbrnv", form[i]) != NULL)
+		if (sstrchr("oasbrnvl", form[i]) != NULL)
 			i_type_change(e, form[i]);
-		else if (sstrchr(">*#@~", form[i]) != NULL)
+		else if (sstrchr(">*#@", form[i]) != NULL)
 		{
 			if (form[i] == '>')
 				if (e->etype == SJSON_TYPE_ARRAY)
@@ -96,7 +98,7 @@ static inline int	sjson_explorer_load_args(const char *form,
 				else if (e->etype == SJSON_TYPE_OBJECT)
 					e->args[e->cur_arg++].ptr = va_arg(*ap, char*);
 				else
-					return (SJSON_ERROR_INVALID_SYNTAX);
+					return (e->e = SJSON_ERROR_INVALID_SYNTAX);
 			else if (form[i] == '#')
 			{
 				e->args[e->cur_arg++].ptr = va_arg(*ap, void*);
@@ -113,11 +115,10 @@ int		sjson_explorer(const t_sjson_value *root, const char *form, ...)
 	t_jae	e;
 	va_list	ap;
 
-	if ((e.e = sjson_explorer_prepare(root, form, &e)) != SJSON_ERROR_OK)
+	if (sjson_explorer_prepare(root, form, &e) != SJSON_ERROR_OK)
 		return (e.e);
-
 	va_start(ap, form);
-	if ((e.e = sjson_explorer_load_args(form, &e, &ap)) != SJSON_ERROR_OK)
+	if (sjson_explorer_load_args(form, &e, &ap) != SJSON_ERROR_OK)
 	{
 		va_end(ap);
 		free(e.args);
@@ -127,7 +128,8 @@ int		sjson_explorer(const t_sjson_value *root, const char *form, ...)
 		e.args[e.cur_arg].ptr = va_arg(ap, void*);
 	va_end(ap);
 	e.root = (t_sjson_value*)root;
-	e.valid = sjson_explorer_internal(form, (int)sstrlen((char*)form), &e);
+	e.etype = SJSON_TYPE_NONE;
+	sjson_explorer_internal(form, (int)sstrlen((char*)form), &e);
 	free(e.args);
-	return (e.valid);
+	return (e.e == SJSON_ERROR_OK ? e.valid : e.e);
 }

@@ -41,7 +41,7 @@
 # define SJSON_ARRAY_STARTERS ((char*[SJSON_ARRAY_COUNT]){"["})
 # define SJSON_ARRAY_ENDERS ((char*[SJSON_ARRAY_COUNT]){"]"})
 
-# define SJSON_BLANKS " \t\n"
+# define SJSON_BLANKS " \t\n\r\v"
 
 # define SJSON_NULL_COUNT 1
 # define SJSON_NULL_SET ((char*[SJSON_NULL_COUNT]){"null"})
