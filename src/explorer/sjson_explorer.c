@@ -5,93 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/10 19:32:04 by hmartzol          #+#    #+#             */
-/*   Updated: 2018/10/11 20:08:21 by hmartzol         ###   ########.fr       */
+/*   Created: 2019/00/00 00:00:00 by hmartzol          #+#    #+#             */
+/*   Updated: 2019/00/00 00:00:00 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/sjson_defines.h"
-#include "../../inc/sjson_types.h"
-#include "../../inc/sjson_functions.h"
-
-inline static int	i_right(t_jae *e)
-{
-	t_sjson_value	*tmp;
-	size_t			tmp1;
-	char			*tmp2;
-
-	if (e->error_stack)
-		++e->error_stack;
-	else if ((e->etype != SJSON_TYPE_OBJECT && e->etype != SJSON_TYPE_ARRAY) ||
-			!sjson_test_type(e->node, e->etype))
-		e->error_stack = 1;
-	if (e->error_stack)
-		return (va_arg(*e->ap, size_t) || 1);
-	if (e->etype == SJSON_TYPE_OBJECT)
-	{
-		if (sjson_search_pair_in_object(e->node,
-				(tmp2 = va_arg(*e->ap, char *)), &tmp) != SJSON_ERROR_OK)
-			return (e->error_stack = 1);
-		e->node = tmp;
-		return (1);
-	}
-	if (sjson_search_index_in_array(e->node,
-			tmp1 = va_arg(*e->ap, size_t), &tmp) != SJSON_ERROR_OK)
-		return (e->error_stack = 1);
-	e->node = tmp;
-	return (1);
-}
-
-inline static int	i_store(t_jae *e, void *tmp, int do_store)
-{
-	if (do_store)
-	{
-		if (e->node->type == SJSON_TYPE_STRING)
-			*(t_sjson_string **)tmp = e->node->data.str;
-		if (e->node->type & SJSON_TYPE_NULL)
-			*(void **)tmp = NULL;
-		if (e->node->type & SJSON_TYPE_ARRAY)
-			*(t_sjson_array **)tmp = &e->node->data.ar;
-		if (e->node->type & SJSON_TYPE_OBJECT)
-			*(t_sjson_object **)tmp = &e->node->data.obj;
-		if (e->node->type == SJSON_TYPE_REAL)
-			*(t_sjson_real *)tmp = e->node->data.real;
-		if (e->node->type == SJSON_TYPE_BOOLEAN)
-			*(t_sjson_boolean *)tmp = e->node->data.bol;
-		if (e->node->type == SJSON_TYPE_NONE)
-			*(t_sjson_value **)tmp = e->node;
-	}
-	++e->valid;
-	return (1);
-}
-
-inline static int	i_access(t_jae *e, const char c)
-{
-	t_sjson_call_back	cb;
-
-	if (c == '>')
-		return (i_right(e));
-	if (c == '<' && e->error_stack && --e->error_stack)
-		return (1);
-	if (c == '<')
-		return ((e->node = e->node->parent) || 1);
-	if (c == '#' || c == '*')
-		cb = va_arg(*e->ap, t_sjson_call_back);
-	if (e->error_stack || !sjson_test_type(e->node, e->etype))
-		return ((c == '#' ? va_arg(*e->ap, void*) : 0) || 1);
-	if (c == '#')
-	{
-		if (e->etype == SJSON_TYPE_NONE)
-			e->e = cb(e->node, va_arg(*e->ap, void*), e->node->type);
-		else if (e->etype == SJSON_TYPE_STRING)
-			e->e = cb(e->node->data.str, va_arg(*e->ap, void*), e->node->type);
-		else
-			e->e = cb((void *)&e->node->data, va_arg(*e->ap, void*),
-				e->node->type);
-		return (e->e != SJSON_ERROR_OK || (++e->valid) || 1);
-	}
-	return ((c == '*' || c == '?') ? i_store(e, (void*)cb, c == '*') : 0);
-}
+#include <sjson_defines.h>
+#include <sjson_types.h>
+#include <sjson_functions.h>
 
 inline static int	i_type_change(t_jae *e, const char c)
 {
@@ -112,33 +33,101 @@ inline static int	i_type_change(t_jae *e, const char c)
 	return (0);
 }
 
-int					sjson_explorer(const t_sjson_value *root,
-									const char *form,
-									...)
+int		sjson_explorer_internal(const char *form, int form_length, t_jae *e)
+{
+	int	i;
+
+	e->cur_arg = 0;
+	e->etype = SJSON_TYPE_NONE;
+	e->valid = 0;
+	e->error_stack = 0;
+	i = -1;
+	while (e->e == SJSON_ERROR_OK && ++i < form_length)
+		if (form[i] == '$')
+		{
+			e->node = e->root;
+			e->error_stack = 0;
+		}
+		else if (sisspace(form[i]));
+		else if (!i_type_change(e, form[i])
+				&& !sjson_explorer_access(form, form_length, e, &i))
+			return (SJSON_ERROR_INVALID_SYNTAX);
+	return (e->e == SJSON_ERROR_OK ? e->valid : e->e);
+}
+
+static inline int	sjson_explorer_prepare(const t_sjson_value *root,
+	const char *form, t_jae *e)
+{
+	int		i;
+
+	*e = (t_jae){.node = NULL, .cur_arg = 0, .args = NULL, .nb_arg = 0,
+		.e = SJSON_ERROR_OK, .error_stack = 0, .etype = SJSON_TYPE_NONE,
+		.valid = 0, .extra_arg = 0, .key_index = NULL};
+	if (root == NULL || form == NULL)
+		return (SJSON_ERROR_INVALID_PARAMETER);
+	i = -1;
+	while (form[++i] != '\0')
+		if (sstrchr("@*>~#", form[i]) != NULL)
+		{
+			if (form[i] == '@')
+				e->extra_arg = 1;
+			e->nb_arg += 1 + (form[i] == '#');
+		}
+	if ((e->args = malloc(sizeof(t_jae_arg) * (e->nb_arg + e->extra_arg)))
+			== NULL)
+		return (SJSON_ERROR_OUT_OF_MEMORY);
+	return (SJSON_ERROR_OK);
+}
+
+static inline int	sjson_explorer_load_args(const char *form,
+	t_jae *e, va_list *ap)
+{
+	int	i;
+
+	i = -1;
+	while (form[++i] != '\0')
+		if (sstrchr("oasbrnv", form[i]) != NULL)
+			i_type_change(e, form[i]);
+		else if (sstrchr(">*#@~", form[i]) != NULL)
+		{
+			if (form[i] == '>')
+				if (e->etype == SJSON_TYPE_ARRAY)
+					e->args[e->cur_arg++].index = va_arg(*ap, t_sjson_size);
+				else if (e->etype == SJSON_TYPE_OBJECT)
+					e->args[e->cur_arg++].ptr = va_arg(*ap, char*);
+				else
+					return (SJSON_ERROR_INVALID_SYNTAX);
+			else if (form[i] == '#')
+			{
+				e->args[e->cur_arg++].ptr = va_arg(*ap, void*);
+				e->args[e->cur_arg++].ptr = va_arg(*ap, void*);
+			}
+			else
+				e->args[e->cur_arg++].ptr = va_arg(*ap, void*);
+		}
+	return (SJSON_ERROR_OK);
+}
+
+int		sjson_explorer(const t_sjson_value *root, const char *form, ...)
 {
 	t_jae	e;
-	int		pos;
 	va_list	ap;
 
-	if (root == NULL || form == NULL)
-		return (-1);
-	e = (t_jae){.node = NULL, .etype = SJSON_TYPE_NONE,
-		.error_stack = 0, .valid = 0, .e = SJSON_ERROR_OK, .ap = &ap};
+	if ((e.e = sjson_explorer_prepare(root, form, &e)) != SJSON_ERROR_OK)
+		return (e.e);
+
 	va_start(ap, form);
-	pos = -1;
-	while (form[++pos] != '\0')
-		if (form[pos] == '$')
-		{
-			e.node = (t_sjson_value *)root;
-			e.error_stack = 0;
-		}
-		else if (sisspace(form[pos]))
-			;
-		else if (!i_type_change(&e, form[pos]) && !i_access(&e, form[pos]))
-		{
-			va_end(ap);
-			return (-1);
-		}
+	if ((e.e = sjson_explorer_load_args(form, &e, &ap)) != SJSON_ERROR_OK)
+	{
+		va_end(ap);
+		free(e.args);
+		return (e.e);
+	}
+	if (e.extra_arg)
+		e.args[e.cur_arg].ptr = va_arg(ap, void*);
 	va_end(ap);
+	e.root = (t_sjson_value*)root;
+	e.valid = sjson_explorer_internal(form, (int)sstrlen((char*)form), &e);
+	free(e.args);
 	return (e.valid);
 }

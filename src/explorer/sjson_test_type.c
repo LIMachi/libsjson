@@ -16,7 +16,8 @@
 t_sjson_error	sjson_test_type(const t_sjson_value *value,
 								const t_sjson_value_type type)
 {
-	if (value == NULL || !(value->type & type) || value->parent == NULL)
+	if (value == NULL || !(value->type & type) || value->type == SJSON_TYPE_NONE
+			|| value->parent == NULL)
 		return (0);
 	if ((value->type & SJSON_TYPE_ARRAY) && value->data.ar.values == NULL)
 		return (0);

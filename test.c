@@ -36,6 +36,7 @@ int		main(void)
 	t_sjson_value		*root;
 	t_sjson_real		real;
 	t_sjson_boolean		bol;
+	t_sjson_size		len;
 	int					r;
 
 	real = 42.0;
@@ -49,11 +50,12 @@ int		main(void)
 	write(1, "\n", 1);
 	printf("void*: %d, size_t: %d, func: %d\n", (int)sizeof(void*),
 		(int)sizeof(size_t), (int)sizeof(t_sjson_call_back));
-	r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#",
+	r = sjson_explorer(root, "$o>a>r*<a>b*$o>s#~",
 		"a", (size_t)0, &real, (size_t)1, &bol,
-		"b", test_string_ok, "ok");
+		"b", test_string_ok, "ok", &len);
 	printf("retrieved %d values\n", r);
 	printf("real: %f\nboolean: %d\n", real, bol);
+	printf("string length: %d\n", (int)len);
 	sjson_free(root);
 	return (0);
 }

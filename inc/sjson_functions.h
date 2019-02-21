@@ -50,6 +50,10 @@ t_sjson_error	string_extractor(t_sjson_env *e,
 ** explorer
 */
 
+int				sjson_explorer_internal(const char *form,
+										int form_length,
+										t_jae *e);
+
 t_sjson_error	sjson_test_type(const t_sjson_value *value,
 								const t_sjson_value_type type);
 
@@ -60,6 +64,16 @@ t_sjson_error	sjson_search_pair_in_object(t_sjson_value *v,
 t_sjson_error	sjson_search_index_in_array(t_sjson_value *value,
 											size_t index,
 											t_sjson_value **out);
+
+int				sjson_explorer_access(const char *form,
+										int form_length,
+										t_jae *e,
+										int *i);
+
+int				sjson_explorer_subscript(const char *form,
+										int form_length,
+										t_jae *e,
+										int *i);
 
 /*
 ** print
