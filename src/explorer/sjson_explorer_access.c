@@ -104,6 +104,8 @@ inline static int	i_call(int common, t_jae *e)
 		e->e = cb((void*)&e->node->data, arg_pair, e->node->type, e->key_index);
 	if (e->e == SJSON_ERROR_OK)
 		++e->valid;
+	else
+		e->e = e->e == SJSON_ERROR_KO ? SJSON_ERROR_OK : e->e;
 	return (1);
 }
 

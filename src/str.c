@@ -47,7 +47,7 @@ char	*sstrdup(char *str)
 	s = 0;
 	while (str[s] != '\0')
 		++s;
-	if ((out = malloc((++s) * sizeof(char))) == NULL)
+	if ((out = malloc((s + 1) * sizeof(char))) == NULL)
 		return (NULL);
 	out[s] = '\0';
 	while (s--)
